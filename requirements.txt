@@ -1,0 +1,6 @@
+flask==3.0.3
+flask-cors==4.0.0
+requests==2.32.3
+numpy==1.26.4
+pypdf==6.7.5
+sentence-transformers==5.2.2
