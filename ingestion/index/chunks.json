@@ -1,5 +1,173 @@
 [
   {
+    "id": "Course_Handout__Agentic_AI_4_0",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 0,
+    "text": "Course Code: CSE3101 Course Name: Agentic AI Credits: 3 LDP: 2-0-2 Contact Hours: 3 Sessions per week (2 Theory sessions each of 1 hour approx. + 1 LAB session of 2 hours approx.) Batch: 2023, 7th Semester Academic Year: 2026-27 Semester Duration: 27th July to 20th November 2026 Course Faculty: Dr. Soharab Hossain Shaikh Email: soharab.hossain@bmu.edu.in Office: E2 Building, 4th Floor, Cabin No. 81 Mr. Pranshu Tiwari Email: v-pranshu.tiwari@bmu.edu.in Course Coordinator Dr. Soharab Hossain Shaikh Aim of the Course: The course aims to equip students with the knowledge and skills needed to design, build, and deploy intelligent multi-agent workflows powered by Large Language Models (LLMs). Students will learn to harness the reasoning capabilities of LLMs to automate complex, context-aware tasks"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_1",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 1,
+    "text": "needed to design, build, and deploy intelligent multi-agent workflows powered by Large Language Models (LLMs). Students will learn to harness the reasoning capabilities of LLMs to automate complex, context-aware tasks using advanced agentic design patterns. Emphasis is placed on real-world application, secure deployment, and data privacy, including the use of local LLMs. By the end of the course, students will be prepared to develop robust, scalable AI-driven task automation systems across diverse domains. Course Overview and Context: \"Agentic AI\" is an advanced undergraduate course designed to explore the intersection of artificial intelligence, natural language processing, and task automation. The course spans over 16 weeks and provides learners with the knowledge and practical skills required to build intelligent multi- agent systems"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_2",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 2,
+    "text": "artificial intelligence, natural language processing, and task automation. The course spans over 16 weeks and provides learners with the knowledge and practical skills required to build intelligent multi- agent systems powered by Large Language Models (LLMs). Emphasizing task automation through structured conversational workflows, the course begins with the review of foundational concepts such as transformer architecture, embeddings, LLM training, etc. Further, learners will explore agentic design patterns - including planning, reasoning, tool use, and self-reflection - and gain hands-on experience with leading frameworks such as CrewAI and Google's Agent Development Kit (ADK). The course also covers emerging communication protocols like Anthropic\u2019s Model Context Protocol (MCP) and Google\u2019s Agent2Agent (A2A), with a strong focus on secure, responsible deployment using monitoring, observability,"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_3",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 3,
+    "text": "Kit (ADK). The course also covers emerging communication protocols like Anthropic\u2019s Model Context Protocol (MCP) and Google\u2019s Agent2Agent (A2A), with a strong focus on secure, responsible deployment using monitoring, observability, and guardrails. By the end of the course, participants will be able to design and deploy multi-modal agents across domains such as customer support, healthcare, and automated software development. Course Philosophy: This course will be delivered using a Project-Based Learning (PjBL) approach, where students learn Agentic AI related concepts by designing and developing AI agents to solve complex real-world problems. Students will progressively build an agentic solution, applying concepts of: \uf0b7 Generative AI using LLM acting as the reasoning layer for Agentic AI \uf0b7 Frameworks to build workflows \u2013 CrewAI"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_4",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 4,
+    "text": "Students will progressively build an agentic solution, applying concepts of: \uf0b7 Generative AI using LLM acting as the reasoning layer for Agentic AI \uf0b7 Frameworks to build workflows \u2013 CrewAI and ADK \uf0b7 Multi-agent Orchestration and Planning \uf0b7 Safety and Guardrails \uf0b7 Agent Evaluation for performance improvement \uf0b7 Deployment & Observability Criterion Requirement Faculty Justification (Tick & Elaborate) Application-Oriented Learning Students to apply concepts to build a working system rather than reproduce theory \u2713\u2610 Yes \u2610 No Demonstrable Outcome Course leads to tangible output such as a working agentic AI application deployed and demonstrated \u2713\u2610 Yes \u2610 No Team Feasibility Project can be completed in teams of 2\u20133 students with clear role distribution \u2713\u2610 Yes \u2610 No Accessibility Learning can"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_5",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 5,
+    "text": "application deployed and demonstrated \u2713\u2610 Yes \u2610 No Team Feasibility Project can be completed in teams of 2\u20133 students with clear role distribution \u2713\u2610 Yes \u2610 No Accessibility Learning can be evaluated through structured reviews satisfying minimum criteria, demos, and viva \u2713\u2610 Yes \u2610 No Course Outcomes (CO): At the end of the course the students should be able to do the following: Course Outcome Statement Mapped Component Associated Activities / Assessment CO1 Apply the foundational principles of intelligent agents and large language models to develop multi- agent applications. Employability \uf0ae Intensive theory sessions. \uf0ae In-class framework demonstrations and live-coding sessions \uf0ae Real-world industry case-studies, etc. \uf0ae Quiz for testing students\u2019 learning and understanding CO2 Analyze application requirements and apply"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_6",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 6,
+    "text": "\uf0ae Intensive theory sessions. \uf0ae In-class framework demonstrations and live-coding sessions \uf0ae Real-world industry case-studies, etc. \uf0ae Quiz for testing students\u2019 learning and understanding CO2 Analyze application requirements and apply appropriate agentic design patterns and local LLMs to build secure, privacy- preserving AI solutions Skill Development Employability \uf0ae Hands-on/Practical LAB assignments to address the issues in agentic applications. \uf0ae Experiential Learning through Project- based learning. CO3 Design intelligent multi- agent, multi-modal Entrepreneurship Skill Development Employability \uf0ae Design and development of working prototypes based on the real-world applications to automate complex multi-step tasks. applications as a part of the course- Project work. Prerequisite: 1. Knowledge of Intelligent Agents from the Artificial Intelligence course. 2. Knowledge of LLMs is desirable. 3. Proficiency"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_7",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 7,
+    "text": "multi-step tasks. applications as a part of the course- Project work. Prerequisite: 1. Knowledge of Intelligent Agents from the Artificial Intelligence course. 2. Knowledge of LLMs is desirable. 3. Proficiency in Python Programming. Topics of the course: Topics Number of Sessions Course Outcomes Review of Prerequisites: Intelligent agents, Transformers, and Large Language Models (LLMs). Introduction to Agentic AI: Evolution from LLMs to autonomous AI agents. Overview of AI Agents - Characteristics, architecture, and life cycle. Single-Agent and Multi-Agent Systems: Concepts, architectures, and applications. Applications of Agentic AI: Enterprise use cases and emerging trends. 3 (2 Th + 1 Lab) CO1 Reasoning and Prompting Strategies: ReAct (Reasoning and Acting) \u2013 integrating reasoning and tool use; Chain-of-Thought (CoT), Tree-of-Thought (ToT), Self-consistency. Agentic"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_8",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 8,
+    "text": "and emerging trends. 3 (2 Th + 1 Lab) CO1 Reasoning and Prompting Strategies: ReAct (Reasoning and Acting) \u2013 integrating reasoning and tool use; Chain-of-Thought (CoT), Tree-of-Thought (ToT), Self-consistency. Agentic Design Patterns: Reflection, Tool use, Planning, Multi-agent workflows; Flow Engineering in agentic systems. Agentic Retrieval-Augmented Generation (RAG): Designing and implementing conversational AI workflows with retrieval- augmented reasoning. 3 (2 Th + 1 Lab) CO1, CO2, CO3 CrewAI Framework Deep Dive: Architecture and core components, including agents, tools, memory, tasks, and crews Workflow Automation with Flows: Designing, orchestrating, and automating agentic workflows using Flows 8 (5 Th + 3 Lab) CO1, CO2, CO3 Google ADK Deep Dive: Architecture, core components, and development workflow Agent Fundamentals: Agent (LlmAgent) class, agent lifecycle, and"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_9",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 9,
+    "text": "workflows using Flows 8 (5 Th + 3 Lab) CO1, CO2, CO3 Google ADK Deep Dive: Architecture, core components, and development workflow Agent Fundamentals: Agent (LlmAgent) class, agent lifecycle, and capabilities 20 (14 Th + 6 Lab) CO1, CO2, CO3 Tools and Function Calling: Tool context, built-in tools, and custom tool development State, Sessions, and Memory: Transient vs. persistent state, session management, and memory mechanisms Event-Driven Architecture: Events, event handling, and asynchronous agent execution Agent Orchestration: Coordinator agents, sub- agents, task delegation, and execution management Multi-Agent Workflows: Graph workflows, dynamic workflows, collaborative workflows, and template- based workflows Callbacks: Model, agent, and tool callbacks for customization and control Guardrails and Safety: Designing secure, reliable, and responsible agentic applications Agent Evaluation: Performance"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_10",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 10,
+    "text": "workflows, collaborative workflows, and template- based workflows Callbacks: Model, agent, and tool callbacks for customization and control Guardrails and Safety: Designing secure, reliable, and responsible agentic applications Agent Evaluation: Performance assessment, benchmarking, and iterative improvement Monitoring and Observability: Logging, tracing, debugging, and runtime monitoring Deployment: Packaging, deployment strategies, and production considerations Model Context Protocol (MCP): Agent-to-tool communication and tool interoperability Agent-to-Agent (A2A) Protocol: Communication, collaboration, and coordination among AI agents 6 (4 Th + 2 Lab) CO1, CO2, CO3 Data Security and Privacy: Deploying open local LLMs for secure and privacy-preserving AI applications. 3 (2 Th + 1 Lab) CO1, CO2 Multimodal Agent Design: Building intelligent agents that understand and reason over text, audio, images, and video. Industry Use Cases:"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_11",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 11,
+    "text": "privacy-preserving AI applications. 3 (2 Th + 1 Lab) CO1, CO2 Multimodal Agent Design: Building intelligent agents that understand and reason over text, audio, images, and video. Industry Use Cases: Designing end-to-end agentic solutions and complex multi-agent workflows for customer support, healthcare, finance, software engineering, automated coding, debugging, and execution. 4 (2 Th + 2 Lab) CO1, CO2, CO3 Course Closure - Summary and Discussions. 1 - CO/PO Mapping: CO/PO Mapping PO 1 PO 2 PO 3 PO 4 PO 5 PO 6 PO 7 PO 8 PO 9 PO1 0 PO1 1 PO1 2 PSO 1 PSO 2 PSO 3 PSO 4 CO1 3 2 1 2 2 1 2 2 2 CO2 2 3 1 2 1 1"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_12",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 12,
+    "text": "0 PO1 1 PO1 2 PSO 1 PSO 2 PSO 3 PSO 4 CO1 3 2 1 2 2 1 2 2 2 CO2 2 3 1 2 1 1 2 1 CO3 2 2 3 2 1 2 3 1 Learning Resources: Textbook: 1. Micheal Lanham, \"AI Agents in Action\", Manning Publications Co., 2025. Other Resources: 2. Official Documentations of CrewAI, ADK CrewAI: https://docs.crewai.com/en/introduction ADK: https://adk.dev/get-started/ and https://google.github.io/adk-docs/ 3. Valentina Alto, \"Building LLM Powered Applications: Create intelligent apps and agents with large language models\"; Packt Publication; 2024 4. Benjamin Labaschin; \"What Are AI Agents?\", O'Reilly Media, Inc.; 2023. 5. Review the Intelligent Agents chapter from the book \u201cArtificial Intelligence: A Modern Approach\u201d by Stuart Russell and Peter Norvig\u2019s 6."
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_13",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 13,
+    "text": "Labaschin; \"What Are AI Agents?\", O'Reilly Media, Inc.; 2023. 5. Review the Intelligent Agents chapter from the book \u201cArtificial Intelligence: A Modern Approach\u201d by Stuart Russell and Peter Norvig\u2019s 6. Research Papers from arxiv (https://arxiv.org/) Online Resources/ MooCs: 7. Courses on Coursera and Deeplearning.ai. 8. Online Book - Deep Learning by Ian Goodfellow and Yoshua Bengio and Aaron Courville, MIT Press, 2016. Note: Additional resources, as and when required will be shared in the classroom. Assessment Pattern: The final grade will be determined by the marks earned by a student in quiz and phase-wise evaluations of the project. Grading will be conducted using the relative grading method outlined in the university\u2019s academic regulations. To be eligible for grading, students must"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_14",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 14,
+    "text": "in quiz and phase-wise evaluations of the project. Grading will be conducted using the relative grading method outlined in the university\u2019s academic regulations. To be eligible for grading, students must achieve a minimum of 40% of the total marks upon completing all assessments listed in the table below: Evaluation Component Weightage (%) Evaluation Schedule/ Timeline Focus, Rubrics/Remarks CO Mapping Project Evaluation (Phase-1) 10% September 3rd week. Criteria: C1: Problem Definition C2: Objectives and Outcomes C3: Methodology (partial) C4: Feasibility and Resource Planning C5: Individual Understanding of Project Student Submissions: \u2013 One-page Project Charter/Synopsis \u2013 Project Timeline \u2013 Team Responsibility Matrix CO1 Quiz 20% September 4th week. Objective: CO1 (Duration 30 mins) Knowledge and understanding, ability to apply. The evaluation will"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_15",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 15,
+    "text": "One-page Project Charter/Synopsis \u2013 Project Timeline \u2013 Team Responsibility Matrix CO1 Quiz 20% September 4th week. Objective: CO1 (Duration 30 mins) Knowledge and understanding, ability to apply. The evaluation will be based on MCQs or short-answer type questions. Project Evaluation (Phase-2) 30% October 3rd/4th week. Criteria: C6: Progress vs Plan C7: Technical Understanding C8: Problem Solving C9: Documentation (Working) C10: Individual Contribution Student Submissions: \u2013 Updated Project Charter / Synopsis (if revised) \u2013 Revised Project Timeline (progress vs plan) \u2013 Working Prototype / Code Demonstration \u2013 Brief Progress Report (1\u20132 pages or demo-based evidence) CO1 CO2 End-term Exam Project Evaluation (Phase-3) 40% During the last week of the course. Criteria: C11: Final Product / Solution C12: Technical Depth C13: Innovation"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_16",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 16,
+    "text": "pages or demo-based evidence) CO1 CO2 End-term Exam Project Evaluation (Phase-3) 40% During the last week of the course. Criteria: C11: Final Product / Solution C12: Technical Depth C13: Innovation / Application C14: Presentation & Communication C15: Individual Contribution & Learning Student Submissions: \u2013 Final Functional Agentic Application \u2013 Source Code Repository (e.g. GitHub repo) \u2013 Softcopy of the Final Project Report (concise, structured in provided template) \u2013 Final Presentation PPT & Demonstration \u2013 Final Group/Self Contribution Matrix Project Report to be submitted by each group. (10%) Assessment will be based on the usability of the application developed & demonstration (20%) followed by a Viva (10%). CO1 CO2 CO3 Additional Guidelines for Team Responsibility All students are expected to contribute"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_17",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 17,
+    "text": "based on the usability of the application developed & demonstration (20%) followed by a Viva (10%). CO1 CO2 CO3 Additional Guidelines for Team Responsibility All students are expected to contribute across core components (Agents, Tools, Orchestrator, etc. and integrations). While tasks may be divided within teams, roles must rotate across phases. No student may limit their contribution to a single area (e.g., only tool design, only UI or documentation). Each student is expected to make significant technical contributions to the success of the project. During evaluation (demo/viva), each student should be able to explain and modify any part of the project. Individual performance will be assessed based on demonstrated understanding of all components. \u2013 All evaluations will be based on"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_18",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 18,
+    "text": "be able to explain and modify any part of the project. Individual performance will be assessed based on demonstrated understanding of all components. \u2013 All evaluations will be based on the work presented by the students as well as the questions asked, or the problems given to implement. \u2013 Cases of AI-generated code or plagiarism will be taken seriously and reported according to the university's policy on Unfair Means (UFM). It is essential that all work is original and adheres to academic integrity. \u2013 There is a mandatory requirement to upload the project to a public repository on GitHub. Attendance Policy: Students are expected to attend classes regularly. Failure to follow the classes regularly and adhere to the expected attendance"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_19",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 19,
+    "text": "upload the project to a public repository on GitHub. Attendance Policy: Students are expected to attend classes regularly. Failure to follow the classes regularly and adhere to the expected attendance percentage will result in losing quiz/lab marks and a reduction of the grade as per the University\u2019s grading policy. Recourse Examination Policy: This is an applied course focused on real-world problem- solving using Agentic AI. There will be no recourse examination held. The student can only repeat the course when it is offered in the subsequent semester/year. Make-up Policy: Make-up will be offered only for the Quiz component to a student who has provided prior intimation of absence before the conduct of the exam. There will be no make-up provided"
+  },
+  {
+    "id": "Course_Handout__Agentic_AI_4_20",
+    "source_file": "Course_Handout__Agentic_AI_4.pdf",
+    "doc_type": "syllabus",
+    "year": null,
+    "chunk_index": 20,
+    "text": "will be offered only for the Quiz component to a student who has provided prior intimation of absence before the conduct of the exam. There will be no make-up provided for the rest of the assessment components. Behavior Expectations: No mobile phones and other distractive gadgets are permitted in the class. Academic Dishonesty/Cheating/Plagiarism: Plagiarism and dishonesty in any form in any evaluation component will lead to appropriate disciplinary action."
+  },
+  {
     "id": "os_syllabus_0",
     "source_file": "os_syllabus.txt",
     "doc_type": "syllabus",
