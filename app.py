@@ -50,7 +50,7 @@ def call_ollama(prompt: str) -> str:
             "model": MODEL_NAME,
             "prompt": prompt,
             "stream": False,
-            "options": {"num_predict": 150},
+            "options": {"num_predict": 150, "num_ctx": 1024},
         },
         timeout=300,
     )
