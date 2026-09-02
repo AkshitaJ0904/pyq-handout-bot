@@ -1,0 +1,81 @@
+# PYQ + Handout Cross-Reference Bot
+
+Reads a course syllabus/handout and cross-references it against previous
+years' question papers (PYQs) to flag topics that show up often in exams
+but are thin or missing in the handout.
+
+Built progressively across 5 lab exercises. Each exercise is a git tag on
+this same codebase (`git tag`) — it's one evolving app, not five separate ones.
+
+## Architecture (final, Exercise 5)
+
+```
+User -> App -> API/Orchestration -> RAG/Retrieval Service -> Context
+     -> LLM Service -> Ollama -> Code Llama -> Response
+                                       ^
+                           Data Service (syllabus + PYQ chunks/embeddings)
+```
+
+## Exercise progress
+
+- **ex1-basic-app** — Flask `/ask` route forwarding straight to Code Llama via Ollama.
+- **ex2-knowledge-base** — `ingestion/build_index.py` chunks syllabus/PYQ docs and embeds them.
+- **ex3-rag** — `app.py` retrieves relevant chunks before asking the LLM; `/compare` shows with vs. without RAG.
+- **ex4-services** — same logic split into `services/{data,retrieval,llm}_service.py` + `services/orchestrator.py`.
+- **ex5-docker** — everything containerized via `docker/docker-compose.yml`.
+
+## Setup
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+Ollama must be running locally with the model pulled:
+```bash
+ollama serve          # if not already running
+ollama pull codellama
+```
+
+## Your real course documents
+
+Sample placeholder docs (a generic "Operating Systems" course) live in
+`data/syllabus/` and `data/pyq/` so the pipeline runs end-to-end out of the
+box. **Replace them with your real syllabus PDF and PYQ PDFs**, then rebuild
+the index:
+
+```bash
+python3 ingestion/build_index.py
+```
+
+Filenames just need `.pdf` or `.txt`, and PYQ filenames should contain a
+4-digit year (e.g. `pyq_2023.pdf`) so results can be attributed to a year.
+
+## Running it
+
+**Monolith (Exercises 1-3):**
+```bash
+python3 app.py
+curl -X POST http://localhost:5001/ask -H "Content-Type: application/json" \
+  -d '{"question": "What topics come up most in past exams but are barely in the syllabus?"}'
+```
+
+**Services (Exercise 4):**
+```bash
+./scripts/run_services.sh
+curl -X POST http://localhost:5001/ask -H "Content-Type: application/json" \
+  -d '{"question": "..."}'
+```
+
+**Docker (Exercise 5):**
+```bash
+cd docker
+docker compose up --build
+```
+
+## Notes on this machine
+
+Code Llama 7B on an 8GB M1 with other apps open can swap heavily and get
+very slow (single answers taking minutes). Keep other memory-hungry apps
+closed while testing, and keep `num_predict` low for quick iteration.

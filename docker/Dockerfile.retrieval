@@ -1,0 +1,7 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY services/requirements-retrieval.txt .
+RUN pip install --no-cache-dir -r requirements-retrieval.txt
+COPY . .
+EXPOSE 5003
+CMD ["python", "services/retrieval_service.py"]

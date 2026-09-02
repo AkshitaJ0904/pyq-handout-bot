@@ -1,0 +1,53 @@
+services:
+  data-service:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.data
+    ports:
+      - "5002:5002"
+    volumes:
+      - ../ingestion/index:/app/ingestion/index
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5002/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  retrieval-service:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.retrieval
+    ports:
+      - "5003:5003"
+    environment:
+      DATA_SERVICE_URL: http://data-service:5002
+    depends_on:
+      data-service:
+        condition: service_healthy
+
+  llm-service:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.llm
+    ports:
+      - "5004:5004"
+    environment:
+      # Ollama runs on the HOST (not containerized) so the already-pulled
+      # 3.8GB codellama model doesn't need to be downloaded again.
+      OLLAMA_URL: http://host.docker.internal:11434/api/generate
+      MODEL_NAME: codellama
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  orchestrator:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.orchestrator
+    ports:
+      - "5001:5001"
+    environment:
+      RETRIEVAL_SERVICE_URL: http://retrieval-service:5003
+      LLM_SERVICE_URL: http://llm-service:5004
+    depends_on:
+      - retrieval-service
+      - llm-service
