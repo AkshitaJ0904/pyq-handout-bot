@@ -1,0 +1,40 @@
+CS301 - Operating Systems
+Course Handout / Syllabus
+
+Unit 1: Introduction to Operating Systems
+- What is an operating system, goals and functions
+- Types of operating systems: batch, multiprogrammed, time-sharing, distributed, real-time
+- System calls and system programs overview
+
+Unit 2: Process Management
+- Process concept, process states, process control block
+- Process scheduling queues and schedulers
+- CPU scheduling: First Come First Serve (FCFS), Shortest Job First (SJF), Round Robin
+- Brief comparison of scheduling algorithms using turnaround time and waiting time
+
+Unit 3: Process Synchronization
+- Critical section problem, Peterson's solution
+- Semaphores: definition and usage (introductory treatment only, one lecture)
+- Classical synchronization problems mentioned by name only: producer-consumer, readers-writers
+
+Unit 4: Memory Management
+- Contiguous memory allocation, fragmentation
+- Paging: basic concept, page tables
+- Segmentation: basic concept
+- Virtual memory overview, demand paging
+
+Unit 5: File Systems and Storage
+- File concepts, directory structure
+- File allocation methods: contiguous, linked, indexed
+- Disk structure overview
+
+Unit 6: Miscellaneous Topics
+- Deadlocks: definition and the four necessary conditions (single slide, not covered in depth)
+- Protection and security: brief overview
+
+Note: Disk scheduling algorithms (SCAN, C-SCAN, LOOK) and deadlock avoidance
+algorithms (Banker's Algorithm) are NOT covered in lecture slides this semester
+due to time constraints; students are pointed to the textbook chapter for
+self-study only.
+
+Recommended Textbook: Silberschatz, Galvin, Gagne - Operating System Concepts

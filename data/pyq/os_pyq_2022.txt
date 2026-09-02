@@ -1,0 +1,28 @@
+CS301 Operating Systems - End Semester Examination 2022
+Time: 3 hours, Max Marks: 100
+
+Q1. Explain Banker's Algorithm for deadlock avoidance with a suitable example.
+    Given the following allocation and max matrices, determine if the system
+    is in a safe state and find a safe sequence. [15 marks]
+
+Q2. A disk queue has requests on cylinders: 98, 183, 37, 122, 14, 124, 65, 67.
+    The disk head is at cylinder 53. Calculate total head movement using
+    SCAN and C-SCAN disk scheduling algorithms. [15 marks]
+
+Q3. What are the four necessary conditions for deadlock to occur? Explain
+    each with an example. How does deadlock prevention differ from deadlock
+    avoidance? [10 marks]
+
+Q4. Differentiate between paging and segmentation. [8 marks]
+
+Q5. Explain the producer-consumer problem and provide a solution using
+    semaphores. Write pseudocode for wait() and signal() operations. [12 marks]
+
+Q6. Compare FCFS, SJF and Round Robin scheduling with a Gantt chart example
+    for 4 processes. [10 marks]
+
+Q7. Explain the Readers-Writers problem and give a semaphore-based solution
+    that avoids starvation. [10 marks]
+
+Q8. What is virtual memory? Explain demand paging and page replacement
+    algorithms (FIFO, LRU, Optimal) with an example reference string. [10 marks]

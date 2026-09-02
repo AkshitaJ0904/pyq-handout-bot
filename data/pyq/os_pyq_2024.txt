@@ -1,0 +1,27 @@
+CS301 Operating Systems - End Semester Examination 2024
+Time: 3 hours, Max Marks: 100
+
+Q1. Explain deadlock avoidance using Banker's Algorithm. Given a system
+    with 5 processes and 3 resource types, determine the safe sequence. [15 marks]
+
+Q2. Given a sequence of disk requests, compute total head movement using
+    SCAN, C-SCAN and C-LOOK disk scheduling algorithms. Compare their
+    performance. [15 marks]
+
+Q3. What is a race condition? Explain how semaphores prevent race
+    conditions in the critical section problem with pseudocode. [10 marks]
+
+Q4. Explain the Bounded Buffer (Producer-Consumer) problem and its
+    semaphore-based solution in detail. [10 marks]
+
+Q5. Differentiate deadlock prevention, avoidance and detection with
+    real-world analogies. [10 marks]
+
+Q6. Explain paging with a diagram showing logical to physical address
+    translation using page tables and TLB. [10 marks]
+
+Q7. What is starvation and aging in CPU scheduling? How does the Round
+    Robin algorithm's time quantum affect performance? [8 marks]
+
+Q8. Explain file allocation methods: contiguous, linked and indexed
+    allocation with their advantages and disadvantages. [10 marks]

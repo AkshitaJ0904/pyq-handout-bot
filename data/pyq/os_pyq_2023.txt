@@ -1,0 +1,25 @@
+CS301 Operating Systems - End Semester Examination 2023
+Time: 3 hours, Max Marks: 100
+
+Q1. State and explain the four necessary conditions for deadlock. [8 marks]
+
+Q2. Using Banker's Algorithm, check whether the given system state is safe.
+    Show the safety algorithm steps clearly. [15 marks]
+
+Q3. A disk has 200 cylinders (0-199). The pending requests in the queue are:
+    45, 21, 67, 90, 4, 170, 102, 60. Head starts at cylinder 50.
+    Compute total seek time using SSTF, SCAN and LOOK algorithms. [15 marks]
+
+Q4. Explain semaphores and how they solve the critical section problem.
+    Differentiate between binary and counting semaphores. [10 marks]
+
+Q5. Describe the Dining Philosophers problem and provide a deadlock-free
+    solution using semaphores. [12 marks]
+
+Q6. What is thrashing? How is it related to the degree of multiprogramming
+    and page replacement policy? [8 marks]
+
+Q7. Explain page replacement algorithms: FIFO, LRU and Optimal with a
+    worked example and compute page faults for each. [12 marks]
+
+Q8. Compare preemptive and non-preemptive scheduling with examples. [8 marks]
