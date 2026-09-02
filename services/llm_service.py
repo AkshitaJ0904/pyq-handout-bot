@@ -32,7 +32,7 @@ def generate():
                 "model": MODEL_NAME,
                 "prompt": prompt,
                 "stream": False,
-                "options": {"num_predict": num_predict},
+                "options": {"num_predict": num_predict, "num_ctx": 1024},
             },
             timeout=300,
         )
