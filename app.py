@@ -9,16 +9,25 @@ and feeds them to Code Llama as context, instead of asking the model
 cold. /compare returns both the RAG and non-RAG answers side by side so
 you can see the difference retrieval makes.
 """
-from flask import Flask, request, jsonify
+import re
+from pathlib import Path
+
+from flask import Flask, render_template, request, jsonify
 import requests
+from werkzeug.utils import secure_filename
 
 from rag.retrieval import Retriever, build_context
+from ingestion.build_index import build as rebuild_index
 
 app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024  # 20MB per upload request
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL_NAME = "codellama"
 TOP_K = 4
+
+DATA_DIR = Path(__file__).resolve().parent / "data"
+ALLOWED_EXTENSIONS = {".pdf", ".txt"}
 
 RAG_SYSTEM_PREFIX = (
     "You are a study assistant for a college course. Use ONLY the context "
@@ -137,7 +146,70 @@ def health():
         "status": "ok",
         "rag_index_loaded": retriever is not None,
         "rag_index_error": _retriever_error,
+        "chunk_count": len(retriever.chunks) if retriever else 0,
+        "model": MODEL_NAME,
     })
+
+
+@app.route("/files", methods=["GET"])
+def list_files():
+    def files_in(sub):
+        d = DATA_DIR / sub
+        if not d.exists():
+            return []
+        return sorted(p.name for p in d.iterdir() if p.suffix.lower() in ALLOWED_EXTENSIONS)
+
+    return jsonify({"syllabus": files_in("syllabus"), "pyq": files_in("pyq")})
+
+
+@app.route("/upload", methods=["POST"])
+def upload():
+    doc_type = request.form.get("doc_type", "").strip()
+    if doc_type not in ("syllabus", "pyq"):
+        return jsonify({"error": "doc_type must be 'syllabus' or 'pyq'"}), 400
+
+    files = [f for f in request.files.getlist("file") if f and f.filename]
+    if not files:
+        return jsonify({"error": "No file provided"}), 400
+
+    year = request.form.get("year", "").strip()
+    if year and not re.fullmatch(r"(19|20)\d{2}", year):
+        return jsonify({"error": "Year must be a 4-digit year"}), 400
+
+    target_dir = DATA_DIR / doc_type
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    saved = []
+    for f in files:
+        filename = secure_filename(f.filename)
+        ext = Path(filename).suffix.lower()
+        if ext not in ALLOWED_EXTENSIONS:
+            return jsonify({"error": f"Unsupported file type: {filename}"}), 400
+        if year and not re.search(r"(19|20)\d{2}", filename):
+            filename = f"{year}_{filename}"
+        f.save(target_dir / filename)
+        saved.append(filename)
+
+    global _retriever, _retriever_error
+    try:
+        rebuild_index()
+    except Exception as e:
+        return jsonify({"error": f"Saved but re-indexing failed: {e}"}), 500
+
+    _retriever = None
+    _retriever_error = None
+    retriever = get_retriever()
+
+    return jsonify({
+        "status": "ok",
+        "saved": saved,
+        "chunk_count": len(retriever.chunks) if retriever else 0,
+    })
+
+
+@app.route("/", methods=["GET"])
+def index():
+    return render_template("index.html")
 
 
 if __name__ == "__main__":

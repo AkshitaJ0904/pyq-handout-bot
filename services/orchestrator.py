@@ -9,11 +9,17 @@ retrieval and generation steps are separate HTTP services instead of
 in-process function calls.
 """
 import os
+from pathlib import Path
 
 import requests
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, render_template, request
 
-app = Flask(__name__)
+ROOT = Path(__file__).resolve().parent.parent
+app = Flask(
+    __name__,
+    template_folder=str(ROOT / "templates"),
+    static_folder=str(ROOT / "static"),
+)
 
 RETRIEVAL_SERVICE_URL = os.environ.get("RETRIEVAL_SERVICE_URL", "http://localhost:5003")
 LLM_SERVICE_URL = os.environ.get("LLM_SERVICE_URL", "http://localhost:5004")
@@ -126,6 +132,11 @@ def health():
         except requests.exceptions.RequestException as e:
             services[name] = {"status": "unreachable", "error": str(e)}
     return jsonify({"status": "ok", "services": services})
+
+
+@app.route("/", methods=["GET"])
+def index():
+    return render_template("index.html")
 
 
 if __name__ == "__main__":
