@@ -1,0 +1,200 @@
+[
+  {
+    "question": "According to the syllabus, what are the four necessary conditions for a deadlock to occur?",
+    "retrieved_chunks": [
+      {
+        "source_file": "os_pyq_2022.txt",
+        "doc_type": "pyq",
+        "score": 0.642,
+        "text": "CS301 Operating Systems - End Semester Examination 2022 Time: 3 hours, Max Marks: 100 Q1. Explain Banker's Algorithm for deadlock avoidance with a suitable example. Given the following allocation and max matrices, determine if the system is in a safe state and find a safe sequence. [15 marks] Q2. A disk queue has requests on cylinders: 98, 183, 37, 122, 14, 124, 65, 67. The disk head is at cylinder 53. Calculate total head movement using SCAN and C-SCAN disk scheduling algorithms. [15 marks] Q3. What are the four necessary conditions for deadlock to occur? Explain each with an example. How does deadlock prevention differ from deadlock avoidance? [10 marks] Q4. Differentiate between paging and segmentation. [8 marks] Q5. Explain"
+      },
+      {
+        "source_file": "os_pyq_2022.txt",
+        "doc_type": "pyq",
+        "score": 0.604,
+        "text": "conditions for deadlock to occur? Explain each with an example. How does deadlock prevention differ from deadlock avoidance? [10 marks] Q4. Differentiate between paging and segmentation. [8 marks] Q5. Explain the producer-consumer problem and provide a solution using semaphores. Write pseudocode for wait() and signal() operations. [12 marks] Q6. Compare FCFS, SJF and Round Robin scheduling with a Gantt chart example for 4 processes. [10 marks] Q7. Explain the Readers-Writers problem and give a semaphore-based solution that avoids starvation. [10 marks] Q8. What is virtual memory? Explain demand paging and page replacement algorithms (FIFO, LRU, Optimal) with an example reference string. [10 marks]"
+      },
+      {
+        "source_file": "os_pyq_2024.txt",
+        "doc_type": "pyq",
+        "score": 0.525,
+        "text": "CS301 Operating Systems - End Semester Examination 2024 Time: 3 hours, Max Marks: 100 Q1. Explain deadlock avoidance using Banker's Algorithm. Given a system with 5 processes and 3 resource types, determine the safe sequence. [15 marks] Q2. Given a sequence of disk requests, compute total head movement using SCAN, C-SCAN and C-LOOK disk scheduling algorithms. Compare their performance. [15 marks] Q3. What is a race condition? Explain how semaphores prevent race conditions in the critical section problem with pseudocode. [10 marks] Q4. Explain the Bounded Buffer (Producer-Consumer) problem and its semaphore-based solution in detail. [10 marks] Q5. Differentiate deadlock prevention, avoidance and detection with real-world analogies. [10 marks] Q6. Explain paging with a diagram showing logical to physical address"
+      },
+      {
+        "source_file": "os_syllabus.txt",
+        "doc_type": "syllabus",
+        "score": 0.514,
+        "text": "section problem, Peterson's solution - Semaphores: definition and usage (introductory treatment only, one lecture) - Classical synchronization problems mentioned by name only: producer-consumer, readers-writers Unit 4: Memory Management - Contiguous memory allocation, fragmentation - Paging: basic concept, page tables - Segmentation: basic concept - Virtual memory overview, demand paging Unit 5: File Systems and Storage - File concepts, directory structure - File allocation methods: contiguous, linked, indexed - Disk structure overview Unit 6: Miscellaneous Topics - Deadlocks: definition and the four necessary conditions (single slide, not covered in depth) - Protection and security: brief overview Note: Disk scheduling algorithms (SCAN, C-SCAN, LOOK) and deadlock avoidance algorithms (Banker's Algorithm) are NOT covered in lecture slides this semester due to time constraints;"
+      }
+    ],
+    "answer": "The four necessary conditions for a deadlock to occur are:\n\n1. Mutual exclusion: Each resource can only be used by one process at a time.\n2. Hold and wait: A process that holds a resource is waiting for another resource that is held by another process.\n3. No preemption: Once a process has a resource, it cannot be preempted (forced to release the resource) by any other process.\n4. Circular wait: A cycle of processes that are waiting for each other to release the resources they require.",
+    "label_retrieval": null,
+    "label_answer": null,
+    "id": "Q01"
+  },
+  {
+    "question": "Banker's Algorithm appears in the 2022, 2023 and 2024 PYQs. Is it covered in the lecture slides according to the syllabus?",
+    "retrieved_chunks": [
+      {
+        "source_file": "os_syllabus.txt",
+        "doc_type": "syllabus",
+        "score": 0.368,
+        "text": "Protection and security: brief overview Note: Disk scheduling algorithms (SCAN, C-SCAN, LOOK) and deadlock avoidance algorithms (Banker's Algorithm) are NOT covered in lecture slides this semester due to time constraints; students are pointed to the textbook chapter for self-study only. Recommended Textbook: Silberschatz, Galvin, Gagne - Operating System Concepts"
+      },
+      {
+        "source_file": "os_pyq_2022.txt",
+        "doc_type": "pyq",
+        "score": 0.321,
+        "text": "CS301 Operating Systems - End Semester Examination 2022 Time: 3 hours, Max Marks: 100 Q1. Explain Banker's Algorithm for deadlock avoidance with a suitable example. Given the following allocation and max matrices, determine if the system is in a safe state and find a safe sequence. [15 marks] Q2. A disk queue has requests on cylinders: 98, 183, 37, 122, 14, 124, 65, 67. The disk head is at cylinder 53. Calculate total head movement using SCAN and C-SCAN disk scheduling algorithms. [15 marks] Q3. What are the four necessary conditions for deadlock to occur? Explain each with an example. How does deadlock prevention differ from deadlock avoidance? [10 marks] Q4. Differentiate between paging and segmentation. [8 marks] Q5. Explain"
+      },
+      {
+        "source_file": "os_pyq_2023.txt",
+        "doc_type": "pyq",
+        "score": 0.293,
+        "text": "they solve the critical section problem. Differentiate between binary and counting semaphores. [10 marks] Q5. Describe the Dining Philosophers problem and provide a deadlock-free solution using semaphores. [12 marks] Q6. What is thrashing? How is it related to the degree of multiprogramming and page replacement policy? [8 marks] Q7. Explain page replacement algorithms: FIFO, LRU and Optimal with a worked example and compute page faults for each. [12 marks] Q8. Compare preemptive and non-preemptive scheduling with examples. [8 marks]"
+      },
+      {
+        "source_file": "os_pyq_2024.txt",
+        "doc_type": "pyq",
+        "score": 0.285,
+        "text": "CS301 Operating Systems - End Semester Examination 2024 Time: 3 hours, Max Marks: 100 Q1. Explain deadlock avoidance using Banker's Algorithm. Given a system with 5 processes and 3 resource types, determine the safe sequence. [15 marks] Q2. Given a sequence of disk requests, compute total head movement using SCAN, C-SCAN and C-LOOK disk scheduling algorithms. Compare their performance. [15 marks] Q3. What is a race condition? Explain how semaphores prevent race conditions in the critical section problem with pseudocode. [10 marks] Q4. Explain the Bounded Buffer (Producer-Consumer) problem and its semaphore-based solution in detail. [10 marks] Q5. Differentiate deadlock prevention, avoidance and detection with real-world analogies. [10 marks] Q6. Explain paging with a diagram showing logical to physical address"
+      }
+    ],
+    "answer": "\nBased on the provided syllabus and PYQs, it appears that Banker's Algorithm is not covered in the lecture slides for this course. The syllabus mentions that Banker's Algorithm is not covered in the lecture slides, and it is only mentioned in the textbook chapter for self-study. This suggests that the focus of the course is on disk scheduling algorithms (SCAN, C-SCAN, LOOK) and deadlock avoidance using Banker's Algorithm, rather than a comprehensive review of all the algorithms covered in the textbook.",
+    "label_retrieval": null,
+    "label_answer": null,
+    "id": "Q08"
+  },
+  {
+    "question": "Disk scheduling algorithms like SCAN and C-SCAN are asked in every year's PYQ. What does the syllabus say about whether these are taught?",
+    "retrieved_chunks": [
+      {
+        "source_file": "os_syllabus.txt",
+        "doc_type": "syllabus",
+        "score": 0.496,
+        "text": "Protection and security: brief overview Note: Disk scheduling algorithms (SCAN, C-SCAN, LOOK) and deadlock avoidance algorithms (Banker's Algorithm) are NOT covered in lecture slides this semester due to time constraints; students are pointed to the textbook chapter for self-study only. Recommended Textbook: Silberschatz, Galvin, Gagne - Operating System Concepts"
+      },
+      {
+        "source_file": "os_pyq_2022.txt",
+        "doc_type": "pyq",
+        "score": 0.39,
+        "text": "CS301 Operating Systems - End Semester Examination 2022 Time: 3 hours, Max Marks: 100 Q1. Explain Banker's Algorithm for deadlock avoidance with a suitable example. Given the following allocation and max matrices, determine if the system is in a safe state and find a safe sequence. [15 marks] Q2. A disk queue has requests on cylinders: 98, 183, 37, 122, 14, 124, 65, 67. The disk head is at cylinder 53. Calculate total head movement using SCAN and C-SCAN disk scheduling algorithms. [15 marks] Q3. What are the four necessary conditions for deadlock to occur? Explain each with an example. How does deadlock prevention differ from deadlock avoidance? [10 marks] Q4. Differentiate between paging and segmentation. [8 marks] Q5. Explain"
+      },
+      {
+        "source_file": "os_pyq_2024.txt",
+        "doc_type": "pyq",
+        "score": 0.364,
+        "text": "CS301 Operating Systems - End Semester Examination 2024 Time: 3 hours, Max Marks: 100 Q1. Explain deadlock avoidance using Banker's Algorithm. Given a system with 5 processes and 3 resource types, determine the safe sequence. [15 marks] Q2. Given a sequence of disk requests, compute total head movement using SCAN, C-SCAN and C-LOOK disk scheduling algorithms. Compare their performance. [15 marks] Q3. What is a race condition? Explain how semaphores prevent race conditions in the critical section problem with pseudocode. [10 marks] Q4. Explain the Bounded Buffer (Producer-Consumer) problem and its semaphore-based solution in detail. [10 marks] Q5. Differentiate deadlock prevention, avoidance and detection with real-world analogies. [10 marks] Q6. Explain paging with a diagram showing logical to physical address"
+      },
+      {
+        "source_file": "os_pyq_2023.txt",
+        "doc_type": "pyq",
+        "score": 0.355,
+        "text": "they solve the critical section problem. Differentiate between binary and counting semaphores. [10 marks] Q5. Describe the Dining Philosophers problem and provide a deadlock-free solution using semaphores. [12 marks] Q6. What is thrashing? How is it related to the degree of multiprogramming and page replacement policy? [8 marks] Q7. Explain page replacement algorithms: FIFO, LRU and Optimal with a worked example and compute page faults for each. [12 marks] Q8. Compare preemptive and non-preemptive scheduling with examples. [8 marks]"
+      }
+    ],
+    "answer": "The syllabus does not mention any specific details about teaching disk scheduling algorithms like SCAN and C-SCAN. However, it does mention that the textbook is recommended for self-study. This suggests that the course may cover some basic concepts related to disk scheduling, but the details of the algorithms may be covered in the textbook or through independent study.",
+    "label_retrieval": null,
+    "label_answer": null,
+    "id": "Q09"
+  },
+  {
+    "question": "Across the 2022, 2023 and 2024 PYQs, which OS topic seems to be asked about most consistently every year?",
+    "retrieved_chunks": [
+      {
+        "source_file": "Course_Handout__Agentic_AI_4.pdf",
+        "doc_type": "syllabus",
+        "score": 0.245,
+        "text": "and emerging trends. 3 (2 Th + 1 Lab) CO1 Reasoning and Prompting Strategies: ReAct (Reasoning and Acting) \u2013 integrating reasoning and tool use; Chain-of-Thought (CoT), Tree-of-Thought (ToT), Self-consistency. Agentic Design Patterns: Reflection, Tool use, Planning, Multi-agent workflows; Flow Engineering in agentic systems. Agentic Retrieval-Augmented Generation (RAG): Designing and implementing conversational AI workflows with retrieval- augmented reasoning. 3 (2 Th + 1 Lab) CO1, CO2, CO3 CrewAI Framework Deep Dive: Architecture and core components, including agents, tools, memory, tasks, and crews Workflow Automation with Flows: Designing, orchestrating, and automating agentic workflows using Flows 8 (5 Th + 3 Lab) CO1, CO2, CO3 Google ADK Deep Dive: Architecture, core components, and development workflow Agent Fundamentals: Agent (LlmAgent) class, agent lifecycle, and"
+      },
+      {
+        "source_file": "os_pyq_2023.txt",
+        "doc_type": "pyq",
+        "score": 0.219,
+        "text": "they solve the critical section problem. Differentiate between binary and counting semaphores. [10 marks] Q5. Describe the Dining Philosophers problem and provide a deadlock-free solution using semaphores. [12 marks] Q6. What is thrashing? How is it related to the degree of multiprogramming and page replacement policy? [8 marks] Q7. Explain page replacement algorithms: FIFO, LRU and Optimal with a worked example and compute page faults for each. [12 marks] Q8. Compare preemptive and non-preemptive scheduling with examples. [8 marks]"
+      },
+      {
+        "source_file": "os_syllabus.txt",
+        "doc_type": "syllabus",
+        "score": 0.217,
+        "text": "CS301 - Operating Systems Course Handout / Syllabus Unit 1: Introduction to Operating Systems - What is an operating system, goals and functions - Types of operating systems: batch, multiprogrammed, time-sharing, distributed, real-time - System calls and system programs overview Unit 2: Process Management - Process concept, process states, process control block - Process scheduling queues and schedulers - CPU scheduling: First Come First Serve (FCFS), Shortest Job First (SJF), Round Robin - Brief comparison of scheduling algorithms using turnaround time and waiting time Unit 3: Process Synchronization - Critical section problem, Peterson's solution - Semaphores: definition and usage (introductory treatment only, one lecture) - Classical synchronization problems mentioned by name only: producer-consumer, readers-writers Unit 4: Memory Management - Contiguous"
+      },
+      {
+        "source_file": "Course_Handout__Agentic_AI_4.pdf",
+        "doc_type": "syllabus",
+        "score": 0.209,
+        "text": "artificial intelligence, natural language processing, and task automation. The course spans over 16 weeks and provides learners with the knowledge and practical skills required to build intelligent multi- agent systems powered by Large Language Models (LLMs). Emphasizing task automation through structured conversational workflows, the course begins with the review of foundational concepts such as transformer architecture, embeddings, LLM training, etc. Further, learners will explore agentic design patterns - including planning, reasoning, tool use, and self-reflection - and gain hands-on experience with leading frameworks such as CrewAI and Google's Agent Development Kit (ADK). The course also covers emerging communication protocols like Anthropic\u2019s Model Context Protocol (MCP) and Google\u2019s Agent2Agent (A2A), with a strong focus on secure, responsible deployment using monitoring, observability,"
+      }
+    ],
+    "answer": "The topic of preemptive and non-preemptive scheduling seems to be asked about consistently across the 2022, 2023, and 2024 PYQs. This is based on the fact that these topics are covered in the course syllabus for operating systems, which is a fundamental course for computer science students. The syllabus outlines the topics that will be covered in the course, including process management, memory management, and process synchronization, which include scheduling algorithms and techniques. The importance of understanding these concepts in operating systems is evident from the fact that they are consistently asked about across different years.",
+    "label_retrieval": null,
+    "label_answer": null,
+    "id": "Q14"
+  },
+  {
+    "question": "Does the syllabus cover TCP/IP networking or computer networks topics?",
+    "retrieved_chunks": [
+      {
+        "source_file": "os_syllabus.txt",
+        "doc_type": "syllabus",
+        "score": 0.307,
+        "text": "CS301 - Operating Systems Course Handout / Syllabus Unit 1: Introduction to Operating Systems - What is an operating system, goals and functions - Types of operating systems: batch, multiprogrammed, time-sharing, distributed, real-time - System calls and system programs overview Unit 2: Process Management - Process concept, process states, process control block - Process scheduling queues and schedulers - CPU scheduling: First Come First Serve (FCFS), Shortest Job First (SJF), Round Robin - Brief comparison of scheduling algorithms using turnaround time and waiting time Unit 3: Process Synchronization - Critical section problem, Peterson's solution - Semaphores: definition and usage (introductory treatment only, one lecture) - Classical synchronization problems mentioned by name only: producer-consumer, readers-writers Unit 4: Memory Management - Contiguous"
+      },
+      {
+        "source_file": "Course_Handout__Agentic_AI_4.pdf",
+        "doc_type": "syllabus",
+        "score": 0.295,
+        "text": "will be offered only for the Quiz component to a student who has provided prior intimation of absence before the conduct of the exam. There will be no make-up provided for the rest of the assessment components. Behavior Expectations: No mobile phones and other distractive gadgets are permitted in the class. Academic Dishonesty/Cheating/Plagiarism: Plagiarism and dishonesty in any form in any evaluation component will lead to appropriate disciplinary action."
+      },
+      {
+        "source_file": "Course_Handout__Agentic_AI_4.pdf",
+        "doc_type": "syllabus",
+        "score": 0.276,
+        "text": "Kit (ADK). The course also covers emerging communication protocols like Anthropic\u2019s Model Context Protocol (MCP) and Google\u2019s Agent2Agent (A2A), with a strong focus on secure, responsible deployment using monitoring, observability, and guardrails. By the end of the course, participants will be able to design and deploy multi-modal agents across domains such as customer support, healthcare, and automated software development. Course Philosophy: This course will be delivered using a Project-Based Learning (PjBL) approach, where students learn Agentic AI related concepts by designing and developing AI agents to solve complex real-world problems. Students will progressively build an agentic solution, applying concepts of: \uf0b7 Generative AI using LLM acting as the reasoning layer for Agentic AI \uf0b7 Frameworks to build workflows \u2013 CrewAI"
+      },
+      {
+        "source_file": "Course_Handout__Agentic_AI_4.pdf",
+        "doc_type": "syllabus",
+        "score": 0.265,
+        "text": "Labaschin; \"What Are AI Agents?\", O'Reilly Media, Inc.; 2023. 5. Review the Intelligent Agents chapter from the book \u201cArtificial Intelligence: A Modern Approach\u201d by Stuart Russell and Peter Norvig\u2019s 6. Research Papers from arxiv (https://arxiv.org/) Online Resources/ MooCs: 7. Courses on Coursera and Deeplearning.ai. 8. Online Book - Deep Learning by Ian Goodfellow and Yoshua Bengio and Aaron Courville, MIT Press, 2016. Note: Additional resources, as and when required will be shared in the classroom. Assessment Pattern: The final grade will be determined by the marks earned by a student in quiz and phase-wise evaluations of the project. Grading will be conducted using the relative grading method outlined in the university\u2019s academic regulations. To be eligible for grading, students must"
+      }
+    ],
+    "answer": "No, the syllabus does not cover TCP/IP networking or computer networks topics. The syllabus is focused on the study of operating systems and does not cover network-related topics.",
+    "label_retrieval": null,
+    "label_answer": null,
+    "id": "Q21"
+  },
+  {
+    "question": "Who is the course faculty for CS301 Operating Systems and what is their office room number?",
+    "retrieved_chunks": [
+      {
+        "source_file": "os_syllabus.txt",
+        "doc_type": "syllabus",
+        "score": 0.485,
+        "text": "CS301 - Operating Systems Course Handout / Syllabus Unit 1: Introduction to Operating Systems - What is an operating system, goals and functions - Types of operating systems: batch, multiprogrammed, time-sharing, distributed, real-time - System calls and system programs overview Unit 2: Process Management - Process concept, process states, process control block - Process scheduling queues and schedulers - CPU scheduling: First Come First Serve (FCFS), Shortest Job First (SJF), Round Robin - Brief comparison of scheduling algorithms using turnaround time and waiting time Unit 3: Process Synchronization - Critical section problem, Peterson's solution - Semaphores: definition and usage (introductory treatment only, one lecture) - Classical synchronization problems mentioned by name only: producer-consumer, readers-writers Unit 4: Memory Management - Contiguous"
+      },
+      {
+        "source_file": "os_pyq_2023.txt",
+        "doc_type": "pyq",
+        "score": 0.347,
+        "text": "CS301 Operating Systems - End Semester Examination 2023 Time: 3 hours, Max Marks: 100 Q1. State and explain the four necessary conditions for deadlock. [8 marks] Q2. Using Banker's Algorithm, check whether the given system state is safe. Show the safety algorithm steps clearly. [15 marks] Q3. A disk has 200 cylinders (0-199). The pending requests in the queue are: 45, 21, 67, 90, 4, 170, 102, 60. Head starts at cylinder 50. Compute total seek time using SSTF, SCAN and LOOK algorithms. [15 marks] Q4. Explain semaphores and how they solve the critical section problem. Differentiate between binary and counting semaphores. [10 marks] Q5. Describe the Dining Philosophers problem and provide a deadlock-free solution using semaphores. [12 marks] Q6."
+      },
+      {
+        "source_file": "Course_Handout__Agentic_AI_4.pdf",
+        "doc_type": "syllabus",
+        "score": 0.303,
+        "text": "Course Code: CSE3101 Course Name: Agentic AI Credits: 3 LDP: 2-0-2 Contact Hours: 3 Sessions per week (2 Theory sessions each of 1 hour approx. + 1 LAB session of 2 hours approx.) Batch: 2023, 7th Semester Academic Year: 2026-27 Semester Duration: 27th July to 20th November 2026 Course Faculty: Dr. Soharab Hossain Shaikh Email: soharab.hossain@bmu.edu.in Office: E2 Building, 4th Floor, Cabin No. 81 Mr. Pranshu Tiwari Email: v-pranshu.tiwari@bmu.edu.in Course Coordinator Dr. Soharab Hossain Shaikh Aim of the Course: The course aims to equip students with the knowledge and skills needed to design, build, and deploy intelligent multi-agent workflows powered by Large Language Models (LLMs). Students will learn to harness the reasoning capabilities of LLMs to automate complex, context-aware tasks"
+      },
+      {
+        "source_file": "os_pyq_2024.txt",
+        "doc_type": "pyq",
+        "score": 0.297,
+        "text": "CS301 Operating Systems - End Semester Examination 2024 Time: 3 hours, Max Marks: 100 Q1. Explain deadlock avoidance using Banker's Algorithm. Given a system with 5 processes and 3 resource types, determine the safe sequence. [15 marks] Q2. Given a sequence of disk requests, compute total head movement using SCAN, C-SCAN and C-LOOK disk scheduling algorithms. Compare their performance. [15 marks] Q3. What is a race condition? Explain how semaphores prevent race conditions in the critical section problem with pseudocode. [10 marks] Q4. Explain the Bounded Buffer (Producer-Consumer) problem and its semaphore-based solution in detail. [10 marks] Q5. Differentiate deadlock prevention, avoidance and detection with real-world analogies. [10 marks] Q6. Explain paging with a diagram showing logical to physical address"
+      }
+    ],
+    "answer": "The course faculty for CS301 Operating Systems is Dr. Soharab Hossain Shaikh, and their office room number is E2 Building, 4th Floor, Cabin No. 81.",
+    "label_retrieval": null,
+    "label_answer": null,
+    "id": "Q22"
+  }
+]

@@ -79,3 +79,11 @@ docker compose up --build
 Code Llama 7B on an 8GB M1 with other apps open can swap heavily and get
 very slow (single answers taking minutes). Keep other memory-hungry apps
 closed while testing, and keep `num_predict` low for quick iteration.
+
+## Week 4 — evaluation
+
+Multi-model evaluation, quantitative metrics, RAG pipeline tracing, and
+repository-level code-understanding experiments live under `eval/` (same
+app, same knowledge base — only the Ollama model varies). See
+`eval/REPORT.md` for the write-up and `eval/run_eval.py --help` /
+`eval/rag_trace.py` / `eval/repo_understanding.py` to reproduce.

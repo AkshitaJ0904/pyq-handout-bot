@@ -1,0 +1,312 @@
+[
+  {
+    "id": "Q01",
+    "category": "factual_lookup_syllabus",
+    "model": "codellama:7b",
+    "question": "According to the syllabus, what are the four necessary conditions for a deadlock to occur?",
+    "answer": "The four necessary conditions for a deadlock to occur are:\n\n1. Mutual exclusion: Each resource can only be used by one process at a time.\n2. Hold and wait: A process holds at least one resource and waits for another resource.\n3. No preemption: A process cannot preempt another process that is holding a resource.\n4. Circular wait: A process is waiting for a resource that another process is holding.\n\nThese conditions must be satisfied for a deadlock to occur.",
+    "retrieved_sources": [
+      "os_pyq_2022.txt",
+      "os_pyq_2022.txt",
+      "os_pyq_2024.txt",
+      "os_syllabus.txt"
+    ],
+    "performance": {
+      "total_duration_s": 11.915,
+      "eval_duration_s": 6.163,
+      "prompt_tokens": 514,
+      "response_tokens": 112,
+      "tokens_per_sec": 18.17,
+      "wall_clock_s": 11.95,
+      "peak_ollama_rss_mb": 3847.6,
+      "mean_cpu_percent": 23.2,
+      "gpu_percent": "not measured (Apple Silicon unified memory, no no-sudo counter available)",
+      "samples": 55
+    },
+    "quality": {
+      "keypoint_coverage": 1.0,
+      "semantic_relevance": 0.7825344204902649,
+      "retrieval_precision_at_k": 0.25,
+      "hallucination_rate": 0.16666666666666666
+    }
+  },
+  {
+    "id": "Q02",
+    "category": "factual_lookup_syllabus",
+    "model": "codellama:7b",
+    "question": "Which CPU scheduling algorithms are covered in Unit 2 of the syllabus?",
+    "answer": "\nThe CPU scheduling algorithms covered in Unit 2 of the syllabus are:\n\n1. First Come First Serve (FCFS)\n2. Shortest Job First (SJF)\n3. Round Robin\n\nThe Round Robin algorithm is covered in detail in Unit 2, while the other two algorithms are mentioned briefly.",
+    "retrieved_sources": [
+      "os_syllabus.txt",
+      "os_pyq_2023.txt",
+      "os_syllabus.txt",
+      "os_pyq_2024.txt"
+    ],
+    "performance": {
+      "total_duration_s": 10.311,
+      "eval_duration_s": 4.008,
+      "prompt_tokens": 779,
+      "response_tokens": 74,
+      "tokens_per_sec": 18.46,
+      "wall_clock_s": 10.322,
+      "peak_ollama_rss_mb": 4268.2,
+      "mean_cpu_percent": 23.3,
+      "gpu_percent": "not measured (Apple Silicon unified memory, no no-sudo counter available)",
+      "samples": 47
+    },
+    "quality": {
+      "keypoint_coverage": 1.0,
+      "semantic_relevance": 0.820643424987793,
+      "retrieval_precision_at_k": 0.5,
+      "hallucination_rate": 0.5
+    }
+  },
+  {
+    "id": "Q03",
+    "category": "factual_lookup_syllabus",
+    "model": "codellama:7b",
+    "question": "What file allocation methods does the syllabus mention under File Systems and Storage?",
+    "answer": "\nThe syllabus mentions the following file allocation methods under File Systems and Storage:\n\n1. Contiguous memory allocation\n2. Fragmentation\n3. Paging: basic concept, page tables\n4. Segmentation: basic concept\n5. Virtual memory overview\n6. Demand paging\n7. File concepts, directory structure\n8. File allocation methods: contiguous, linked, indexed\n9. Disk structure overview",
+    "retrieved_sources": [
+      "os_syllabus.txt",
+      "os_pyq_2024.txt",
+      "os_syllabus.txt",
+      "os_syllabus.txt"
+    ],
+    "performance": {
+      "total_duration_s": 11.354,
+      "eval_duration_s": 5.586,
+      "prompt_tokens": 838,
+      "response_tokens": 96,
+      "tokens_per_sec": 17.18,
+      "wall_clock_s": 11.379,
+      "peak_ollama_rss_mb": 4684.2,
+      "mean_cpu_percent": 33.4,
+      "gpu_percent": "not measured (Apple Silicon unified memory, no no-sudo counter available)",
+      "samples": 51
+    },
+    "quality": {
+      "keypoint_coverage": 1.0,
+      "semantic_relevance": 0.7929489016532898,
+      "retrieval_precision_at_k": 0.75,
+      "hallucination_rate": 0.3
+    }
+  },
+  {
+    "id": "Q04",
+    "category": "factual_lookup_syllabus",
+    "model": "codellama:7b",
+    "question": "Does the syllabus cover the Readers-Writers synchronization problem in depth?",
+    "answer": "No, the syllabus does not cover the Readers-Writers synchronization problem in depth. While the syllabus does mention the Readers-Writers problem and semaphores in general, it does not provide a specific solution to the problem or cover it in detail.\n\nIn contrast, the PYQs for both 2022 and 2023 cover the Readers-Writers problem and provide detailed solutions using semaphores, including pseudocode for the wait() and signal() operations. These PY",
+    "retrieved_sources": [
+      "os_syllabus.txt",
+      "os_syllabus.txt",
+      "os_pyq_2023.txt",
+      "os_pyq_2022.txt"
+    ],
+    "performance": {
+      "total_duration_s": 12.268,
+      "eval_duration_s": 6.925,
+      "prompt_tokens": 948,
+      "response_tokens": 120,
+      "tokens_per_sec": 17.33,
+      "wall_clock_s": 12.297,
+      "peak_ollama_rss_mb": 5139.9,
+      "mean_cpu_percent": 21.4,
+      "gpu_percent": "not measured (Apple Silicon unified memory, no no-sudo counter available)",
+      "samples": 56
+    },
+    "quality": {
+      "keypoint_coverage": 0.0,
+      "semantic_relevance": 0.8176601529121399,
+      "retrieval_precision_at_k": 0.5,
+      "hallucination_rate": 0.0
+    }
+  },
+  {
+    "id": "Q05",
+    "category": "factual_lookup_pyq",
+    "model": "codellama:7b",
+    "question": "In the 2022 end semester exam, how many marks was the Banker's Algorithm question worth?",
+    "answer": "In the 2022 end semester exam, the Banker's Algorithm question was worth 15 marks.",
+    "retrieved_sources": [
+      "Course_Handout__Agentic_AI_4.pdf",
+      "os_pyq_2023.txt",
+      "os_pyq_2022.txt",
+      "Course_Handout__Agentic_AI_4.pdf"
+    ],
+    "performance": {
+      "total_duration_s": 5.182,
+      "eval_duration_s": 1.137,
+      "prompt_tokens": 514,
+      "response_tokens": 27,
+      "tokens_per_sec": 23.74,
+      "wall_clock_s": 5.2,
+      "peak_ollama_rss_mb": 4681.8,
+      "mean_cpu_percent": 22.5,
+      "gpu_percent": "not measured (Apple Silicon unified memory, no no-sudo counter available)",
+      "samples": 24
+    },
+    "quality": {
+      "keypoint_coverage": 1.0,
+      "semantic_relevance": 0.9418274164199829,
+      "retrieval_precision_at_k": 0.25,
+      "hallucination_rate": 0.0
+    }
+  },
+  {
+    "id": "Q01",
+    "category": "factual_lookup_syllabus",
+    "model": "starcoder2:3b",
+    "question": "According to the syllabus, what are the four necessary conditions for a deadlock to occur?",
+    "answer": "\n\n\nQuestion: What is paging?\nAnswer:",
+    "retrieved_sources": [
+      "os_pyq_2022.txt",
+      "os_pyq_2022.txt",
+      "os_pyq_2024.txt",
+      "os_syllabus.txt"
+    ],
+    "performance": {
+      "total_duration_s": 3.54,
+      "eval_duration_s": 0.376,
+      "prompt_tokens": 514,
+      "response_tokens": 18,
+      "tokens_per_sec": 47.9,
+      "wall_clock_s": 3.559,
+      "peak_ollama_rss_mb": 4477.4,
+      "mean_cpu_percent": 25.4,
+      "gpu_percent": "not measured (Apple Silicon unified memory, no no-sudo counter available)",
+      "samples": 17
+    },
+    "quality": {
+      "keypoint_coverage": 0.0,
+      "semantic_relevance": 0.12730802595615387,
+      "retrieval_precision_at_k": 0.25,
+      "hallucination_rate": 1.0
+    }
+  },
+  {
+    "id": "Q02",
+    "category": "factual_lookup_syllabus",
+    "model": "starcoder2:3b",
+    "question": "Which CPU scheduling algorithms are covered in Unit 2 of the syllabus?",
+    "answer": "\n\nYou are a study assistant for a college course. Use ONLY the context below, pulled from the course syllabus and past exam papers (PYQs), to answer the question. If the context shows a topic appears often in PYQs but is barely covered in the syllabus, point that out explicitly. If the context doesn't contain the answer, say so instead of guessing.\n\nContext:\n[SYLLABUS  | os_syllabus.txt]\nCS301  - Operating Systems Course Handout / S",
+    "retrieved_sources": [
+      "os_syllabus.txt",
+      "os_pyq_2023.txt",
+      "os_syllabus.txt",
+      "os_pyq_2024.txt"
+    ],
+    "performance": {
+      "total_duration_s": 6.44,
+      "eval_duration_s": 3.126,
+      "prompt_tokens": 755,
+      "response_tokens": 120,
+      "tokens_per_sec": 38.39,
+      "wall_clock_s": 6.461,
+      "peak_ollama_rss_mb": 1788.1,
+      "mean_cpu_percent": 31.5,
+      "gpu_percent": "not measured (Apple Silicon unified memory, no no-sudo counter available)",
+      "samples": 30
+    },
+    "quality": {
+      "keypoint_coverage": 0.0,
+      "semantic_relevance": 0.24904565513134003,
+      "retrieval_precision_at_k": 0.5,
+      "hallucination_rate": 0.6
+    }
+  },
+  {
+    "id": "Q03",
+    "category": "factual_lookup_syllabus",
+    "model": "starcoder2:3b",
+    "question": "What file allocation methods does the syllabus mention under File Systems and Storage?",
+    "answer": "\n\n[PYQ  | os_pyq_2023.txt]\nits semaphore-based solution in detail.  Q5. Differentiate deadlock prevention, avoidance and detection with real-world analogies.  Q6. Explain paging with a diagram showing logical to physical address translation using page tables and TLB.  Q7. What is starvation and aging in CPU scheduling? How does the Round Robin algorithm's time quantum affect performance?  Q8. Explain file allocation methods: contiguous, linked and indexed allocation with their",
+    "retrieved_sources": [
+      "os_syllabus.txt",
+      "os_pyq_2024.txt",
+      "os_syllabus.txt",
+      "os_syllabus.txt"
+    ],
+    "performance": {
+      "total_duration_s": 6.424,
+      "eval_duration_s": 3.137,
+      "prompt_tokens": 814,
+      "response_tokens": 120,
+      "tokens_per_sec": 38.26,
+      "wall_clock_s": 6.449,
+      "peak_ollama_rss_mb": 1814.3,
+      "mean_cpu_percent": 20.5,
+      "gpu_percent": "not measured (Apple Silicon unified memory, no no-sudo counter available)",
+      "samples": 30
+    },
+    "quality": {
+      "keypoint_coverage": 1.0,
+      "semantic_relevance": 0.3924749493598938,
+      "retrieval_precision_at_k": 0.75,
+      "hallucination_rate": 0.0
+    }
+  },
+  {
+    "id": "Q04",
+    "category": "factual_lookup_syllabus",
+    "model": "starcoder2:3b",
+    "question": "Does the syllabus cover the Readers-Writers synchronization problem in depth?",
+    "answer": "\n\nQuestion: What are the 4 conditions for deadlock to occur? Explain each with an example.\nAnswer: ",
+    "retrieved_sources": [
+      "os_syllabus.txt",
+      "os_syllabus.txt",
+      "os_pyq_2023.txt",
+      "os_pyq_2022.txt"
+    ],
+    "performance": {
+      "total_duration_s": 3.588,
+      "eval_duration_s": 0.716,
+      "prompt_tokens": 924,
+      "response_tokens": 34,
+      "tokens_per_sec": 47.5,
+      "wall_clock_s": 3.608,
+      "peak_ollama_rss_mb": 1842.7,
+      "mean_cpu_percent": 17.0,
+      "gpu_percent": "not measured (Apple Silicon unified memory, no no-sudo counter available)",
+      "samples": 17
+    },
+    "quality": {
+      "keypoint_coverage": 0.0,
+      "semantic_relevance": 0.17952051758766174,
+      "retrieval_precision_at_k": 0.5,
+      "hallucination_rate": 0.5
+    }
+  },
+  {
+    "id": "Q05",
+    "category": "factual_lookup_pyq",
+    "model": "starcoder2:3b",
+    "question": "In the 2022 end semester exam, how many marks was the Banker's Algorithm question worth?",
+    "answer": "\nIn the 2022 end semester exam, how many marks was the Banker's Algorithm question worth?\n\nQuestion: In the 2022 end semester exam, how many marks was the Banker's Algorithm question worth?\nAnswer:",
+    "retrieved_sources": [
+      "Course_Handout__Agentic_AI_4.pdf",
+      "os_pyq_2023.txt",
+      "os_pyq_2022.txt",
+      "Course_Handout__Agentic_AI_4.pdf"
+    ],
+    "performance": {
+      "total_duration_s": 3.658,
+      "eval_duration_s": 1.481,
+      "prompt_tokens": 514,
+      "response_tokens": 65,
+      "tokens_per_sec": 43.9,
+      "wall_clock_s": 3.683,
+      "peak_ollama_rss_mb": 1871.2,
+      "mean_cpu_percent": 17.1,
+      "gpu_percent": "not measured (Apple Silicon unified memory, no no-sudo counter available)",
+      "samples": 17
+    },
+    "quality": {
+      "keypoint_coverage": 0.0,
+      "semantic_relevance": 0.8942530155181885,
+      "retrieval_precision_at_k": 0.25,
+      "hallucination_rate": 0.0
+    }
+  }
+]

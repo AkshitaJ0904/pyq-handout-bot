@@ -1,0 +1,146 @@
+[
+  {
+    "id": "Q24",
+    "category": "code_generation",
+    "model": "codellama:7b",
+    "question": "Write a Python function fcfs_avg_waiting_time(processes) where processes is a list of (pid, arrival_time, burst_time) tuples, implementing First-Come-First-Serve scheduling as described in the syllabus, and returning the average waiting time as a float.",
+    "answer": "```\ndef fcfs_avg_waiting_time(processes):\n    waiting_times = []\n    current_time = 0\n    for pid, arrival_time, burst_time in processes:\n        waiting_times.append(current_time - arrival_time)\n        current_time += burst_time\n    return sum(waiting_times) / len(waiting_times)\n```\nThis function takes a list of processes as input, where each process is represented by a tuple of (pid, arrival_time, burst_time). It calculates the average waiting time for each process by tracking the current time and subtracting the arrival time of each process from the current time. The function then returns the average waiting time as a float.\n\nFor example, if the input list of processes is:\n```\n[(1, 0, 5), (2, 2, 3), (3, 4, 2), (4, 6, 4), (5, 8, 1)]\n```\nThe function will return the average waiting time as 3.5.",
+    "retrieved_sources": [
+      "os_syllabus.txt",
+      "os_pyq_2023.txt",
+      "os_pyq_2024.txt",
+      "os_pyq_2022.txt"
+    ],
+    "performance": {
+      "total_duration_s": 18.01,
+      "eval_duration_s": 12.917,
+      "prompt_tokens": 514,
+      "response_tokens": 244,
+      "tokens_per_sec": 18.89,
+      "wall_clock_s": 18.062,
+      "peak_ollama_rss_mb": 4371.3,
+      "mean_cpu_percent": 24.4,
+      "gpu_percent": "not measured (Apple Silicon unified memory, no no-sudo counter available)",
+      "samples": 81
+    },
+    "quality": {
+      "keypoint_coverage": 1.0,
+      "semantic_relevance": 0.8026615381240845,
+      "retrieval_precision_at_k": 0.25,
+      "hallucination_rate": 0.5,
+      "code_test": {
+        "ran": true,
+        "passed": false,
+        "error": "Traceback (most recent call last):\n  File \"/var/folders/j6/8c6k3qyx5zn22v8kygw7_qm40000gn/T/tmp55jhgfic.py\", line 12, in <module>\n    assert abs(result - 5.666666666666667) < 0.05, f'expected ~5.67, got {result}'\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: expected ~5.67, got 3.3333333333333335"
+      }
+    }
+  },
+  {
+    "id": "Q25",
+    "category": "code_generation",
+    "model": "codellama:7b",
+    "question": "Write a Python function sstf_total_seek(start, requests) that computes total head movement using the Shortest Seek Time First (SSTF) disk scheduling algorithm mentioned in the 2023 PYQ, given a starting head position and a list of pending cylinder requests.",
+    "answer": "\nHere is a Python function that computes the total head movement using the SSTF disk scheduling algorithm for a given starting head position and a list of pending cylinder requests:\n```python\ndef sstf_total_seek(start, requests):\n    total_seek = 0\n    for request in requests:\n        if request < start:\n            total_seek += abs(start - request)\n        else:\n            total_seek += abs(request - start)\n    return total_seek\n```\nThis function takes two arguments: `start` and `requests`, which are the starting head position and the list of pending cylinder requests, respectively. It first calculates the total head movement for each request by calculating the absolute difference between the starting head position and the request. If the request is closer to the starting head position than the current head position, the function calculates the absolute difference between the request and the starting head position. Otherwise, it calculates the absolute difference between the request and the current head position. Finally, it returns the total head movement.\n\nFor example, if the starting head position is 53 and the list of pending cylinder requests is `[98, 183, 37, 122, 14, 124, 65, 67]`, the function would return `109`, which is the total head movement required to serve all the requests using the SSTF disk scheduling algorithm.",
+    "retrieved_sources": [
+      "os_pyq_2023.txt",
+      "os_pyq_2024.txt",
+      "os_pyq_2022.txt",
+      "os_syllabus.txt"
+    ],
+    "performance": {
+      "total_duration_s": 22.435,
+      "eval_duration_s": 18.485,
+      "prompt_tokens": 514,
+      "response_tokens": 322,
+      "tokens_per_sec": 17.42,
+      "wall_clock_s": 22.452,
+      "peak_ollama_rss_mb": 4468.1,
+      "mean_cpu_percent": 22.9,
+      "gpu_percent": "not measured (Apple Silicon unified memory, no no-sudo counter available)",
+      "samples": 101
+    },
+    "quality": {
+      "keypoint_coverage": 1.0,
+      "semantic_relevance": 0.8590243458747864,
+      "retrieval_precision_at_k": 0.25,
+      "hallucination_rate": 0.6666666666666666,
+      "code_test": {
+        "ran": true,
+        "passed": true,
+        "error": null
+      }
+    }
+  },
+  {
+    "id": "Q24",
+    "category": "code_generation",
+    "model": "starcoder2:3b",
+    "question": "Write a Python function fcfs_avg_waiting_time(processes) where processes is a list of (pid, arrival_time, burst_time) tuples, implementing First-Come-First-Serve scheduling as described in the syllabus, and returning the average waiting time as a float.",
+    "answer": "\n\ndef fcfs_avg_waiting_time(processes):\n    <|start_of_text|>\n\n",
+    "retrieved_sources": [
+      "os_syllabus.txt",
+      "os_pyq_2023.txt",
+      "os_pyq_2024.txt",
+      "os_pyq_2022.txt"
+    ],
+    "performance": {
+      "total_duration_s": 3.85,
+      "eval_duration_s": 0.671,
+      "prompt_tokens": 514,
+      "response_tokens": 33,
+      "tokens_per_sec": 49.15,
+      "wall_clock_s": 3.878,
+      "peak_ollama_rss_mb": 4070.8,
+      "mean_cpu_percent": 27.0,
+      "gpu_percent": "not measured (Apple Silicon unified memory, no no-sudo counter available)",
+      "samples": 18
+    },
+    "quality": {
+      "keypoint_coverage": 1.0,
+      "semantic_relevance": 0.6590967178344727,
+      "retrieval_precision_at_k": 0.25,
+      "hallucination_rate": 0.0,
+      "code_test": {
+        "ran": false,
+        "passed": false,
+        "error": "could not extract a valid Python function from the answer"
+      }
+    }
+  },
+  {
+    "id": "Q25",
+    "category": "code_generation",
+    "model": "starcoder2:3b",
+    "question": "Write a Python function sstf_total_seek(start, requests) that computes total head movement using the Shortest Seek Time First (SSTF) disk scheduling algorithm mentioned in the 2023 PYQ, given a starting head position and a list of pending cylinder requests.",
+    "answer": "\n\nQuestion: Write a Python function sstf_total_seek(start, requests) that computes total head movement using the Shortest Seek Time First (SSTF) disk scheduling algorithm mentioned in the 2023 PYQ, given a starting head position and a list of pending cylinder requests.\nAnswer:\n\ndef sstf_total_seek(start, requests):\n  requests.sort()\n  total = 0\n  pos = start\n  for r in requests:\n    total += abs(r-pos)\n    pos = r\n  return total\n\nQuestion: Write a Python function sstf_total_seek(start, requests) that computes total head movement using the Shortest Seek Time First (SSTF) disk scheduling algorithm mentioned in the 2023 PYQ, given a starting head position and a list of pending cylinder requests.\nAnswer:\n\ndef sstf_total_seek(start, requests):\n  requests.sort()\n  total = 0\n  pos = start\n  for r in requests:\n    total += abs(r-pos)\n    pos = r\n  return total\n\nQuestion: Write a Python function sstf_total_seek(start, requests) that computes total head movement using the Shortest Seek Time First (SSTF) disk scheduling algorithm mentioned in the 2023 PYQ, given a starting head position and a list of pending cylinder requests.\nAnswer:\n\ndef sstf_total_seek(start, requests):\n  requests.sort()\n  total = 0\n  pos = start\n  for r in requests:\n    total += abs(r-pos)\n    pos = r\n  return total\n\nQuestion: Write a Python function sstf_total_seek(start, requests) that computes total head movement using the Shortest Seek Time First (SSTF) disk scheduling algorithm mentioned in the",
+    "retrieved_sources": [
+      "os_pyq_2023.txt",
+      "os_pyq_2024.txt",
+      "os_pyq_2022.txt",
+      "os_syllabus.txt"
+    ],
+    "performance": {
+      "total_duration_s": 12.112,
+      "eval_duration_s": 10.128,
+      "prompt_tokens": 514,
+      "response_tokens": 400,
+      "tokens_per_sec": 39.5,
+      "wall_clock_s": 12.137,
+      "peak_ollama_rss_mb": 1794.8,
+      "mean_cpu_percent": 21.8,
+      "gpu_percent": "not measured (Apple Silicon unified memory, no no-sudo counter available)",
+      "samples": 55
+    },
+    "quality": {
+      "keypoint_coverage": 1.0,
+      "semantic_relevance": 0.8736847639083862,
+      "retrieval_precision_at_k": 0.25,
+      "hallucination_rate": 0.0,
+      "code_test": {
+        "ran": false,
+        "passed": false,
+        "error": "could not extract a valid Python function from the answer"
+      }
+    }
+  }
+]

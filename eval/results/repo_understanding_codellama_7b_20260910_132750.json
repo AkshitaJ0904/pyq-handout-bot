@@ -1,0 +1,122 @@
+[
+  {
+    "question": "Which files are involved in generating and storing embeddings for the knowledge base?",
+    "retrieved_files": [
+      "ingestion/build_index.py",
+      "rag/retrieval.py",
+      "ingestion/build_index.py",
+      "ingestion/build_index.py"
+    ],
+    "answer": "The files involved in generating and storing embeddings for the knowledge base are:\n\n1. `ingestion/build_index.py`: This file contains the code that builds the index of chunks and their embeddings. It uses the `SentenceTransformer` library to encode the text of each chunk into a fixed-length vector representation.\n2. `ingestion/index/chunks.json`: This file contains the metadata for the chunks, including their ID, source file, document type, year, chunk index, and text.\n3. `ingestion/index/embeddings.npy`: This file contains the L2-normalized embedding vectors for each chunk.\n4. `rag/retrieval.py`: This file contains the code that retrieves relevant context for a given query by computing the cosine similarity between the query embedding and the embeddings of the indexed chunks.",
+    "correct": null,
+    "failure_mode": null
+  },
+  {
+    "question": "Which service does the orchestrator call first when handling a request to /ask -- the retrieval service or the LLM service?",
+    "retrieved_files": [
+      "services/orchestrator.py",
+      "scripts/run_services.sh",
+      "README.md",
+      "services/orchestrator.py"
+    ],
+    "answer": "The orchestrator calls the retrieval service first when handling a request to /ask.\n\nIn the code snippet from services/orchestrator.py, we can see that the orchestrator makes a request to the retrieval service at the URL specified by the RETRIEVAL_SERVICE_URL environment variable, which is set to \"http://localhost:5003\" in the run_services.sh script. The orchestrator then retrieves the relevant chunks from the retrieval service and uses them to ask the LLM service, which is also specified by an environment variable, LLM_SERVICE_URL.\n\nTherefore, when handling a request to /ask, the orchestrator first calls the retrieval service to retrieve the relevant chunks, and then uses those chunks to ask the LLM service to generate a response.",
+    "correct": null,
+    "failure_mode": null
+  },
+  {
+    "question": "What happens after a user uploads a PDF through the web UI, step by step?",
+    "retrieved_files": [
+      "app.py",
+      "ingestion/build_index.py",
+      "ingestion/build_index.py",
+      "app.py"
+    ],
+    "answer": "When a user uploads a PDF through the web UI in the code provided, the following steps occur:\n\n1. The user submits the form with the PDF file.\n2. The Flask app receives the uploaded file and extracts its metadata.\n3. The PDF file is extracted from the uploaded form and saved to the designated directory.\n4. The PDF file is then processed by the SentenceTransformer model to extract its text.\n5. The text is then split into chunks based on the specified chunk size and overlap.\n6. The extracted text is then indexed using the specified embedding model.\n7. The indexed text is then stored in a JSON file.\n8. The JSON file is then returned to the user as a response.\n\nOverall, the user's PDF file is uploaded to the server, processed using the SentenceTransformer model, and then returned to the user as a JSON file containing the indexed text.",
+    "correct": null,
+    "failure_mode": null
+  },
+  {
+    "question": "Which files would need to change if the chunk size used during ingestion was increased from 120 to 300 words?",
+    "retrieved_files": [
+      "ingestion/build_index.py",
+      "ingestion/build_index.py",
+      "services/data_service.py",
+      "ingestion/build_index.py"
+    ],
+    "answer": "The chunk size used during ingestion is currently set to 120 words. If the chunk size is increased to 300 words, the following files would need to be updated:\n\n1. ingestion/build_index.py: The chunk size is currently set using the `CHUNK_SIZE_WORDS` constant. If the chunk size is increased to 300 words, this constant would need to be updated to reflect the new chunk size.\n2. services/data_service.py: The `get_chunks` endpoint in this file would need to be updated to return the same number of chunks as the new chunk size.\n3. ingestion/build_index.py: The `pieces` variable in this file would need to be updated to include the new chunks.\n\nAdditionally, the `build` function in this file would need to be updated to generate the new chunks and embeddings. The `load_index` function would also need to be updated to reflect the new chunk size.",
+    "correct": null,
+    "failure_mode": null
+  },
+  {
+    "question": "Which component performs the cosine similarity search, and is that logic duplicated anywhere in the codebase?",
+    "retrieved_files": [
+      "rag/retrieval.py",
+      "services/retrieval_service.py",
+      "rag/retrieval.py",
+      "app.py"
+    ],
+    "answer": "The cosine similarity search is performed by the Retriever class in the rag/retrieval.py file. This class loads the chunk index built by the ingestion/build_index.py script and performs the search using the sentence-transformers library. The logic for performing the search is not duplicated anywhere else in the codebase, as it is encapsulated within the Retriever class.\n\nHowever, there is a bit of duplication in the codebase in terms of the handling of the query and the top-k parameter. The Retriever class has a method called search() that takes a query string and a top-k parameter as input, and it uses these to perform the search. The Flask application in the app.py file also has a similar method called search() that takes a query string and a top-k parameter as input and uses them to perform the search.\n\nThis duplication can be reduced by extracting the search logic into a separate function or class that can be used by both the Retriever class and the Flask application. However, this would not necessarily make the codebase less duplicated, as the two classes would still need to have similar interfaces and functionality.",
+    "correct": null,
+    "failure_mode": null
+  },
+  {
+    "question": "Are there any automated test files in this repository?",
+    "retrieved_files": [
+      "README.md",
+      "README.md",
+      "README.md",
+      "README.md"
+    ],
+    "answer": "\nYes, there are automated test files in this repository. In the `tests` directory, you can find test files for each of the services in the pipeline. These test files are used to verify the correctness of the services and ensure that they are working as expected.\n\nHere are some examples of the test files in this repository:\n\n* `tests/test_services.py`: This test file contains tests for the `services` directory, which includes the `Ollama` and `CodeLlama` services. The tests in this file check that the services are able to process requests correctly and return the expected responses.\n* `tests/test_ingestion.py`: This test file contains tests for the `ingestion` directory, which includes the `build_index` script. The tests in this file check that the `build_index` script is able to properly parse and index the syllabus and PYQ documents.\n* `tests/test_app.py`: This test file contains tests for the `app` directory, which includes the `app.py` script. The tests in this file check that the `app` script is able to properly process requests",
+    "correct": null,
+    "failure_mode": null
+  },
+  {
+    "question": "Which environment variable controls which Ollama model the LLM service uses?",
+    "retrieved_files": [
+      "services/llm_service.py",
+      "README.md",
+      "README.md",
+      "docker/docker-compose.yml"
+    ],
+    "answer": "The environment variable that controls which Ollama model the LLM service uses is `MODEL_NAME`. In the `docker-compose.yml` file, it is set to `codellama`, which indicates that the LLM service should use the pre-trained 3.8GB codellama model.",
+    "correct": null,
+    "failure_mode": null
+  },
+  {
+    "question": "What is the difference between how app.py and services/orchestrator.py handle file uploads?",
+    "retrieved_files": [
+      "app.py",
+      "app.py",
+      "services/data_service.py",
+      "docker/Dockerfile.orchestrator"
+    ],
+    "answer": "\nBoth `app.py` and `services/orchestrator.py` handle file uploads, but there are some differences in how they do so.\n\nIn `app.py`, the file uploads are handled by the `upload()` function, which is decorated with the `@app.route(\"/upload\", methods=[\"POST\"])` decorator. This means that when the user submits a file through the `/upload` route, the `upload()` function is called and it handles the file upload.\n\nIn `services/orchestrator.py`, the file uploads are handled by the `load_index()` function, which is called by the `@app.route(\"/index\", methods=[\"GET\"])` decorator. This means that when the user requests the index through the `/index` route, the `load_index()` function is called and it handles the file upload.\n\nThe main difference between the two is that in `app.py`, the file upload is handled directly by the `upload()` function, while in `services/orchestrator.py`, the file upload is handled indirectly through the `load_index()` function. Additionally, `app.py",
+    "correct": null,
+    "failure_mode": null
+  },
+  {
+    "question": "Which Dockerfile builds the retrieval service, and what port does that service listen on?",
+    "retrieved_files": [
+      "docker/docker-compose.yml",
+      "README.md",
+      "scripts/run_services.sh",
+      "README.md"
+    ],
+    "answer": "The Dockerfile that builds the retrieval service is `docker/Dockerfile.retrieval`. This file is located in the same directory as the `docker-compose.yml` file, which means that the retrieval service is built using the same Dockerfile that is used to build the data service.\n\nThe retrieval service listens on port 5003. This is specified in the `ports` section of the `retrieval-service` configuration in the `docker-compose.yml` file. The `ports` section maps the container port 5003 to the host port 5003. This means that when the retrieval service is running in a container, it can be accessed on the host on port 5003.",
+    "correct": null,
+    "failure_mode": null
+  },
+  {
+    "question": "If the retrieval service goes down, which other service's requests will fail, and how would a user observe that failure?",
+    "retrieved_files": [
+      "services/orchestrator.py",
+      "app.py",
+      "scripts/run_services.sh",
+      "services/orchestrator.py"
+    ],
+    "answer": "\nIf the retrieval service goes down, it can cause failures in the orchestrator service, which depends on it. The orchestrator service uses the retrieval service to retrieve chunks of text from the source documents, and if the retrieval service is not available, the orchestrator service will not be able to retrieve these chunks and will fail.\n\nA user can observe the failure of the orchestrator service by checking the health endpoint, which is defined in the app.py file. When the retrieval service is down, the health endpoint will return an error message indicating that the service is unreachable.\n\nHere is an example of how a user can observe the failure of the orchestrator service:\n```\n$ curl http://localhost:5001/health\n{\n  \"status\": \"unreachable\",\n  \"error\": \"Could not reach Retrieval Service. Is it running?\"\n}\n```\nIn this example, the health endpoint returns an error message indicating that the retrieval service is unreachable. This indicates that the orchestrator service is unable to retrieve chunks of text from the source documents and is therefore failing",
+    "correct": null,
+    "failure_mode": null
+  }
+]
