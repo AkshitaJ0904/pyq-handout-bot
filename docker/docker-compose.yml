@@ -21,6 +21,9 @@ services:
       - "5003:5003"
     environment:
       DATA_SERVICE_URL: http://data-service:5002
+    volumes:
+      - ../data:/app/data
+      - ../ingestion/index:/app/ingestion/index
     depends_on:
       data-service:
         condition: service_healthy
@@ -35,7 +38,7 @@ services:
       # Ollama runs on the HOST (not containerized) so the already-pulled
       # 3.8GB codellama model doesn't need to be downloaded again.
       OLLAMA_URL: http://host.docker.internal:11434/api/generate
-      MODEL_NAME: codellama
+      MODEL_NAME: codellama:7b
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -48,6 +51,8 @@ services:
     environment:
       RETRIEVAL_SERVICE_URL: http://retrieval-service:5003
       LLM_SERVICE_URL: http://llm-service:5004
+    volumes:
+      - ../data:/app/data
     depends_on:
       - retrieval-service
       - llm-service

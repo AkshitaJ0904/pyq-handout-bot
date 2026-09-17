@@ -21,6 +21,7 @@ def generate():
     data = request.get_json(silent=True) or {}
     prompt = data.get("prompt", "").strip()
     num_predict = int(data.get("num_predict", 150))
+    model = data.get("model") or MODEL_NAME
 
     if not prompt:
         return jsonify({"error": "Missing 'prompt'"}), 400
@@ -29,7 +30,7 @@ def generate():
         response = requests.post(
             OLLAMA_URL,
             json={
-                "model": MODEL_NAME,
+                "model": model,
                 "prompt": prompt,
                 "stream": False,
                 "options": {"num_predict": num_predict, "num_ctx": 1024},

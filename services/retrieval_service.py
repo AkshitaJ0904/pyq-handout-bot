@@ -8,11 +8,17 @@ question with the same sentence-transformer used at index time, and
 returns the top-k most similar chunks by cosine similarity.
 """
 import os
+import sys
+from pathlib import Path
 
 import numpy as np
 import requests
 from flask import Flask, jsonify, request
 from sentence_transformers import SentenceTransformer
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+from ingestion.build_index import build as rebuild_index  # noqa: E402
 
 app = Flask(__name__)
 
@@ -82,6 +88,21 @@ def reload_index():
     except requests.exceptions.RequestException as e:
         return jsonify({"error": f"Could not reach data service: {e}"}), 502
     return jsonify({"status": "reloaded", "chunk_count": len(_chunks)})
+
+
+@app.route("/reindex", methods=["POST"])
+def reindex():
+    """Rebuild the chunk/embedding index from whatever's on disk under
+    data/, then re-fetch it from the Data Service (which reads the same
+    shared volume fresh on every request)."""
+    try:
+        rebuild_index()
+        load_index_from_data_service()
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": f"Rebuilt but could not reach data service: {e}"}), 502
+    except Exception as e:
+        return jsonify({"error": f"Reindex failed: {e}"}), 500
+    return jsonify({"status": "reindexed", "chunk_count": len(_chunks)})
 
 
 @app.route("/health", methods=["GET"])

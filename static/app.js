@@ -126,6 +126,7 @@
   const submitBtn = document.getElementById("submit-btn");
   const submitLabel = document.getElementById("submit-label");
   const tabs = document.querySelectorAll(".seg-btn");
+  const modelRow = document.getElementById("model-row");
 
   let mode = "ask";
 
@@ -138,7 +139,8 @@
       tab.classList.add("is-active");
       tab.setAttribute("aria-selected", "true");
       mode = tab.dataset.mode;
-      submitLabel.textContent = mode === "compare" ? "Compare" : "Ask";
+      submitLabel.textContent = mode === "compare" ? "Compare" : mode === "models" ? "Compare models" : "Ask";
+      modelRow.hidden = mode !== "models";
     });
   });
 
@@ -239,14 +241,52 @@
     );
   }
 
+  function renderModelsResult(data) {
+    clearLoading();
+    const cols = data.results
+      .map((r) => {
+        const body = r.error
+          ? `<div class="answer"><p class="error-tag">Error &mdash; ${escapeHtml(r.error)}</p></div>`
+          : `<div class="answer"><p>${escapeHtml(r.answer).trim()}</p></div>`;
+        return `<div class="compare-col">
+          <div class="col-label"><span class="dot on"></span> ${escapeHtml(r.model)} &middot; ${r.latency_s}s</div>
+          ${body}
+        </div>`;
+      })
+      .join("");
+    results.insertAdjacentHTML(
+      "afterbegin",
+      `<div class="result-card">
+        <div class="result-question">${escapeHtml(data.question)}</div>
+        <div class="compare-grid models-grid">${cols}</div>
+        ${tagRowHtml(data.sources)}
+        ${coverageHtml(data.sources)}
+      </div>`
+    );
+  }
+
   async function submitQuestion(question) {
     renderLoading(question);
     submitBtn.disabled = true;
     const prevLabel = submitLabel.textContent;
-    submitLabel.textContent = mode === "compare" ? "Comparing…" : "Asking…";
+    submitLabel.textContent = mode === "compare" ? "Comparing…" : mode === "models" ? "Comparing models…" : "Asking…";
 
-    const endpoint = mode === "compare" ? "/compare" : "/ask";
-    const body = mode === "compare" ? { question } : { question, rag: true };
+    const endpoint = mode === "compare" ? "/compare" : mode === "models" ? "/compare_models" : "/ask";
+    let body;
+    if (mode === "compare") {
+      body = { question };
+    } else if (mode === "models") {
+      const models = Array.from(document.querySelectorAll("#model-row input:checked")).map((el) => el.value);
+      if (!models.length) {
+        renderError(question, "Select at least one model to compare.");
+        submitBtn.disabled = false;
+        submitLabel.textContent = prevLabel;
+        return;
+      }
+      body = { question, models };
+    } else {
+      body = { question, rag: true };
+    }
 
     try {
       const data = await fetchJson(endpoint, {
@@ -255,6 +295,7 @@
         body: JSON.stringify(body),
       });
       if (mode === "compare") renderCompareResult(data);
+      else if (mode === "models") renderModelsResult(data);
       else renderAskResult(data);
     } catch (err) {
       renderError(question, err.message || "Could not reach the server.");

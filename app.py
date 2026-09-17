@@ -23,7 +23,7 @@ app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024  # 20MB per upload request
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "codellama"
+MODEL_NAME = "codellama:7b"
 TOP_K = 4
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
@@ -52,16 +52,16 @@ def get_retriever():
     return _retriever
 
 
-def call_ollama(prompt: str) -> str:
+def call_ollama(prompt: str, model: str = None) -> str:
     response = requests.post(
         OLLAMA_URL,
         json={
-            "model": MODEL_NAME,
+            "model": model or MODEL_NAME,
             "prompt": prompt,
             "stream": False,
             "options": {"num_predict": 150, "num_ctx": 1024},
         },
-        timeout=300,
+        timeout=600,
     )
     response.raise_for_status()
     return response.json().get("response", "")
@@ -137,6 +137,45 @@ def compare():
             for c in chunks
         ],
     })
+
+
+@app.route("/compare_models", methods=["POST"])
+def compare_models():
+    """Runs the same question + same retrieved context through several
+    Ollama models, so different LLMs can be compared side by side on
+    identical input (Week 4, Exercise 1)."""
+    import time
+
+    data = request.get_json(silent=True) or {}
+    question = data.get("question", "").strip()
+    models = data.get("models") or [MODEL_NAME]
+    if not question:
+        return jsonify({"error": "Missing 'question' in request body"}), 400
+    if not models:
+        return jsonify({"error": "Missing 'models' in request body"}), 400
+
+    retriever = get_retriever()
+    sources = []
+    prompt = question
+    if retriever:
+        chunks = retriever.search(question, top_k=TOP_K)
+        sources = [
+            {"source_file": c["source_file"], "doc_type": c["doc_type"], "score": round(c["score"], 3)}
+            for c in chunks
+        ]
+        context = build_context(chunks)
+        prompt = RAG_SYSTEM_PREFIX.format(context=context, question=question)
+
+    results = []
+    for model in models:
+        t0 = time.time()
+        try:
+            answer = call_ollama(prompt, model=model)
+            results.append({"model": model, "answer": answer, "latency_s": round(time.time() - t0, 1)})
+        except requests.exceptions.RequestException as e:
+            results.append({"model": model, "error": str(e), "latency_s": round(time.time() - t0, 1)})
+
+    return jsonify({"question": question, "sources": sources, "results": results})
 
 
 @app.route("/health", methods=["GET"])

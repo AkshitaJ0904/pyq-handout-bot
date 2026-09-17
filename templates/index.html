@@ -60,6 +60,7 @@
         <div class="segmented" role="tablist">
           <button type="button" class="seg-btn is-active" data-mode="ask" role="tab" aria-selected="true">Answer</button>
           <button type="button" class="seg-btn" data-mode="compare" role="tab" aria-selected="false">Compare with / without</button>
+          <button type="button" class="seg-btn" data-mode="models" role="tab" aria-selected="false">Compare models</button>
         </div>
       </div>
 
@@ -69,6 +70,12 @@
           <button type="button" class="quick" data-q="Which topics come up often in past papers but are barely in the syllabus?">gap check</button>
           <button type="button" class="quick" data-q="What does the syllabus say about semaphores?">semaphores</button>
           <button type="button" class="quick" data-q="How are disk scheduling algorithms treated in the handout vs the exams?">disk scheduling</button>
+        </div>
+        <div class="model-row" id="model-row" hidden>
+          <span class="model-row-label">Models to compare</span>
+          <label class="model-check"><input type="checkbox" value="codellama:7b" checked> codellama:7b</label>
+          <label class="model-check"><input type="checkbox" value="starcoder2:3b" checked> starcoder2:3b</label>
+          <label class="model-check"><input type="checkbox" value="qwen3-coder:latest"> qwen3-coder:latest <span class="slow-note">(slow, ~7s/token on this machine)</span></label>
         </div>
         <div class="form-footer">
           <button type="submit" class="primary-btn" id="submit-btn">
