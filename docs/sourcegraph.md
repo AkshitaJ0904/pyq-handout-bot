@@ -85,6 +85,21 @@ comparison.
 
 ## Verifying it
 
+After the server is up, before touching the app:
+
+```bash
+export SOURCEGRAPH_URL=http://<ec2-public-ip>
+export SOURCEGRAPH_TOKEN=sgp_...
+export SOURCEGRAPH_REPO=github.com/AkshitaJ0904/pyq-handout-bot
+python3 scripts/verify_sourcegraph.py
+```
+
+It checks reachability, authentication, whether the repo finished indexing,
+and then the three Week 4 questions — exiting non-zero on failure, so it can
+gate a CI job later. Each failure prints the likely cause (a 401 means the
+token; "no results" usually means the code host is still cloning).
+
+
 The three Week 4 questions are wired to the quick-chips in the Repo Q&A tab
 (`absence`, `duplication`, `cross-file`). Expected results:
 
