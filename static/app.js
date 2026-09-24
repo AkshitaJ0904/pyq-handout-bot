@@ -140,18 +140,24 @@
       tab.setAttribute("aria-selected", "true");
       mode = tab.dataset.mode;
       submitLabel.textContent =
-        mode === "compare" ? "Compare" : mode === "models" ? "Compare models" : mode === "repo" ? "Search repo" : "Ask";
+        mode === "compare" ? "Compare" : mode === "models" ? "Compare models"
+        : mode === "repo" ? "Search repo" : mode === "guard" ? "Run both ways" : "Ask";
       modelRow.hidden = mode !== "models";
       const isRepo = mode === "repo";
+      const isGuard = mode === "guard";
       const repoQuick = document.getElementById("repo-quick");
+      const guardQuick = document.getElementById("guard-quick");
       const docQuick = document.getElementById("doc-quick");
       const evalPicker = document.querySelector(".eval-picker");
       if (repoQuick) repoQuick.hidden = !isRepo;
-      if (docQuick) docQuick.hidden = isRepo;
+      if (guardQuick) guardQuick.hidden = !isGuard;
+      if (docQuick) docQuick.hidden = isRepo || isGuard;
       // The labelled-question dropdown is for the course-document dataset,
       // which has no bearing on repository questions.
-      if (evalPicker) evalPicker.hidden = isRepo;
-      textarea.placeholder = isRepo
+      if (evalPicker) evalPicker.hidden = isRepo || isGuard;
+      textarea.placeholder = isGuard
+        ? "ask anything — it runs with guardrails off, then on"
+        : isRepo
         ? "ask about this repository — e.g. are there any test files?"
         : "e.g. what topics come up a lot in past papers but aren't in the handout?";
     });
@@ -528,18 +534,68 @@
     );
   }
 
+  function verdictListHtml(verdicts, acted) {
+    const rows = (verdicts || [])
+      .filter((v) => v.action !== "allow")
+      .map((v) => {
+        const isBlock = v.action === "block";
+        const tag = isBlock ? (acted ? "BLOCKED" : "would block") : "warning";
+        return `<li class="gv ${isBlock ? "is-block" : "is-warn"}">
+          <div class="gv-head"><span class="gv-tag">${tag}</span>
+            <code>${escapeHtml(v.stage)}/${escapeHtml(v.guard)}</code></div>
+          <div class="gv-why">${escapeHtml(v.reason || "")}</div>
+        </li>`;
+      })
+      .join("");
+    const passed = (verdicts || []).filter((v) => v.action === "allow").length;
+    return rows
+      ? `<ul class="gv-list">${rows}</ul><div class="gv-foot">${passed} other check${passed === 1 ? "" : "s"} passed</div>`
+      : `<div class="gv-foot">All ${passed} checks passed.</div>`;
+  }
+
+  function renderGuardResult(data) {
+    clearLoading();
+    const without = data.without_guardrails || {};
+    const wth = data.with_guardrails || {};
+    const controlled = !wth.allowed;
+    results.insertAdjacentHTML(
+      "afterbegin",
+      `<div class="result-card is-wide">
+        <div class="result-question">${escapeHtml(data.question)}</div>
+        <div class="compare-grid">
+          <div class="compare-col">
+            <div class="col-label"><span class="dot off"></span> Without guardrails
+              <span class="badge ${without.allowed ? "off" : "on"}">${without.allowed ? "answer returned" : "refused"}</span></div>
+            <div class="answer"><p>${escapeHtml(without.answer || "").trim()}</p></div>
+            ${verdictListHtml(without.verdicts, false)}
+          </div>
+          <div class="compare-col">
+            <div class="col-label"><span class="dot on"></span> With guardrails
+              <span class="badge ${controlled ? "on" : "off"}">${controlled ? "blocked by " + escapeHtml(wth.blocked_by || "") : "allowed through"}</span></div>
+            <div class="answer"><p>${escapeHtml(wth.answer || "").trim()}</p></div>
+            ${verdictListHtml(wth.verdicts, true)}
+          </div>
+        </div>
+      </div>`
+    );
+  }
+
   async function submitQuestion(question) {
     renderLoading(question);
     submitBtn.disabled = true;
     const prevLabel = submitLabel.textContent;
     submitLabel.textContent =
-      mode === "compare" ? "Comparing…" : mode === "models" ? "Comparing models…" : mode === "repo" ? "Searching…" : "Asking…";
+      mode === "compare" ? "Comparing…" : mode === "models" ? "Comparing models…"
+      : mode === "repo" ? "Searching…" : mode === "guard" ? "Running both ways…" : "Asking…";
 
     const endpoint =
-      mode === "compare" ? "/compare" : mode === "models" ? "/compare_models" : mode === "repo" ? "/repo_qa" : "/ask";
+      mode === "compare" ? "/compare" : mode === "models" ? "/compare_models"
+      : mode === "repo" ? "/repo_qa" : mode === "guard" ? "/guardrail_demo" : "/ask";
     let body;
     const questionId = evalSelect && evalSelect.value ? evalSelect.value : null;
-    if (mode === "repo") {
+    if (mode === "guard") {
+      body = { question };
+    } else if (mode === "repo") {
       body = { question, answer: true };
     } else if (mode === "compare") {
       body = { question, question_id: questionId };
@@ -562,7 +618,8 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      if (mode === "repo") renderRepoResult(data);
+      if (mode === "guard") renderGuardResult(data);
+      else if (mode === "repo") renderRepoResult(data);
       else if (mode === "compare") renderCompareResult(data);
       else if (mode === "models") renderModelsResult(data);
       else renderAskResult(data);

@@ -132,6 +132,32 @@ runs with no server. Which one answered is shown as a badge — the fallback is
 never silent. Setup, including why Apple Silicon can't host the server, is in
 [docs/sourcegraph.md](docs/sourcegraph.md).
 
+## Guardrails
+
+The app refuses rather than guesses. Three stages — input, retrieval, output —
+each able to stop a response, with the reason surfaced instead of the model
+quietly declining.
+
+The motivating failure is recorded in `eval/REPORT.md`: asked for the CS301
+Operating Systems faculty, the model returned a real name and cabin number
+belonging to the *Agentic AI* course, because 21 of the knowledge base's 30
+chunks are that other course's handout.
+
+Measured on `eval/guardrail_dataset.json` (29 cases):
+
+| | without guardrails | with guardrails |
+|---|---|---|
+| Undesirable responses returned | 19/19 | 1/19 |
+| Recall / Precision / F1 | — | 94.7% / 100% / 0.973 |
+| Legitimate questions refused | — | 0/10 |
+
+```bash
+python3 eval/guardrail_eval.py
+```
+
+Full write-up, including why a similarity threshold cannot work here and the
+one failure mode that remains open, is in [docs/guardrails.md](docs/guardrails.md).
+
 ## Tests
 
 ```bash
