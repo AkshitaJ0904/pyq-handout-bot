@@ -9,7 +9,9 @@ and feeds them to Code Llama as context, instead of asking the model
 cold. /compare returns both the RAG and non-RAG answers side by side so
 you can see the difference retrieval makes.
 """
+import json
 import re
+import time
 from pathlib import Path
 
 from flask import Flask, render_template, request, jsonify
@@ -18,6 +20,8 @@ from werkzeug.utils import secure_filename
 
 from rag.retrieval import Retriever, build_context
 from ingestion.build_index import build as rebuild_index
+from eval.metrics import ResourceSampler
+from rag import live_metrics
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024  # 20MB per upload request
@@ -28,6 +32,12 @@ TOP_K = 4
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 ALLOWED_EXTENSIONS = {".pdf", ".txt"}
+EVAL_DATASET = Path(__file__).resolve().parent / "eval" / "eval_dataset.json"
+
+# Week 4 found a 150-token budget truncated every code answer mid-function
+# (REPORT.md, Exercise 3), so code-generation questions get a larger budget.
+NUM_PREDICT_DEFAULT = 150
+NUM_PREDICT_CODE = 400
 
 RAG_SYSTEM_PREFIX = (
     "You are a study assistant for a college course. Use ONLY the context "
@@ -40,6 +50,8 @@ RAG_SYSTEM_PREFIX = (
 
 _retriever = None
 _retriever_error = None
+_embedder = None
+_eval_questions = None
 
 
 def get_retriever():
@@ -52,19 +64,68 @@ def get_retriever():
     return _retriever
 
 
-def call_ollama(prompt: str, model: str = None) -> str:
+def get_embedder():
+    """The sentence-transformer used for the relevance and hallucination
+    metrics. Reuses the retriever's already-loaded model rather than loading
+    a second copy -- this app targets an 8GB machine and the weights are not
+    free."""
+    retriever = get_retriever()
+    if retriever is not None:
+        return retriever.model
+    global _embedder
+    if _embedder is None:
+        from sentence_transformers import SentenceTransformer
+        from rag.retrieval import EMBEDDING_MODEL
+        _embedder = SentenceTransformer(EMBEDDING_MODEL)
+    return _embedder
+
+
+def load_eval_questions():
+    """The 28 labelled Week 4 questions, cached. These are the only questions
+    with the ground truth that correctness, retrieval quality and test-pass
+    need, so the UI offers them in a dropdown."""
+    global _eval_questions
+    if _eval_questions is None:
+        try:
+            _eval_questions = json.loads(EVAL_DATASET.read_text()).get("questions", [])
+        except (OSError, ValueError):
+            _eval_questions = []
+    return _eval_questions
+
+
+def find_eval_question(question_id):
+    if not question_id:
+        return None
+    return next((q for q in load_eval_questions() if q.get("id") == question_id), None)
+
+
+def call_ollama(prompt: str, model: str = None, num_predict: int = NUM_PREDICT_DEFAULT) -> dict:
     response = requests.post(
         OLLAMA_URL,
         json={
             "model": model or MODEL_NAME,
             "prompt": prompt,
             "stream": False,
-            "options": {"num_predict": 150, "num_ctx": 1024},
+            "options": {"num_predict": num_predict, "num_ctx": 1024},
         },
         timeout=600,
     )
     response.raise_for_status()
-    return response.json().get("response", "")
+    # Return the whole payload, not just the text: Ollama reports
+    # prompt_eval_count / eval_count / eval_duration in the same response,
+    # and those are the token-usage and throughput metrics.
+    return response.json()
+
+
+def generate(prompt: str, model: str = None, num_predict: int = NUM_PREDICT_DEFAULT):
+    """One generation plus everything the metric panel needs: the answer
+    text, Ollama's raw stats payload, sampled CPU/RSS, and wall-clock
+    latency."""
+    t0 = time.time()
+    with ResourceSampler() as sampler:
+        payload = call_ollama(prompt, model=model, num_predict=num_predict)
+    wall_s = time.time() - t0
+    return payload.get("response", ""), payload, sampler.summary(), wall_s
 
 
 @app.route("/ask", methods=["POST"])
@@ -72,6 +133,7 @@ def ask():
     data = request.get_json(silent=True) or {}
     question = data.get("question", "").strip()
     use_rag = data.get("rag", True)
+    ground_truth = find_eval_question(data.get("question_id"))
 
     if not question:
         return jsonify({"error": "Missing 'question' in request body"}), 400
@@ -79,6 +141,7 @@ def ask():
     retriever = get_retriever() if use_rag else None
     sources = []
     prompt = question
+    context = ""
 
     if retriever:
         chunks = retriever.search(question, top_k=TOP_K)
@@ -89,8 +152,10 @@ def ask():
         context = build_context(chunks)
         prompt = RAG_SYSTEM_PREFIX.format(context=context, question=question)
 
+    num_predict = NUM_PREDICT_CODE if (ground_truth or {}).get("code_test") else NUM_PREDICT_DEFAULT
+
     try:
-        answer = call_ollama(prompt)
+        answer, payload, resources, wall_s = generate(prompt, num_predict=num_predict)
     except requests.exceptions.ConnectionError:
         return jsonify({"error": "Could not reach Ollama. Is it running? Try: ollama serve"}), 503
     except requests.exceptions.RequestException as e:
@@ -101,6 +166,9 @@ def ask():
         "answer": answer,
         "rag_used": retriever is not None,
         "sources": sources,
+        "metrics": live_metrics.compute(
+            question, answer, context, sources, payload, resources, wall_s, ground_truth
+        ),
     })
 
 
@@ -116,26 +184,39 @@ def compare():
     if retriever is None:
         return jsonify({"error": _retriever_error or "Retriever unavailable"}), 503
 
+    ground_truth = find_eval_question(data.get("question_id"))
+
     try:
-        no_rag_answer = call_ollama(question)
+        no_rag_answer, no_rag_payload, no_rag_res, no_rag_s = generate(question)
 
         chunks = retriever.search(question, top_k=TOP_K)
         context = build_context(chunks)
         rag_prompt = RAG_SYSTEM_PREFIX.format(context=context, question=question)
-        rag_answer = call_ollama(rag_prompt)
+        rag_answer, rag_payload, rag_res, rag_s = generate(rag_prompt)
     except requests.exceptions.ConnectionError:
         return jsonify({"error": "Could not reach Ollama. Is it running? Try: ollama serve"}), 503
     except requests.exceptions.RequestException as e:
         return jsonify({"error": f"Ollama request failed: {e}"}), 502
 
+    sources = [
+        {"source_file": c["source_file"], "doc_type": c["doc_type"], "score": round(c["score"], 3)}
+        for c in chunks
+    ]
+
     return jsonify({
         "question": question,
         "without_rag": no_rag_answer,
         "with_rag": rag_answer,
-        "sources_used_for_rag": [
-            {"source_file": c["source_file"], "doc_type": c["doc_type"], "score": round(c["score"], 3)}
-            for c in chunks
-        ],
+        "sources_used_for_rag": sources,
+        # Both sides get the full panel, so the with/without contrast is
+        # numeric and not just two blocks of prose. Grounding is the telling
+        # one: without a knowledge base it cannot be measured at all.
+        "metrics_without_rag": live_metrics.compute(
+            question, no_rag_answer, "", [], no_rag_payload, no_rag_res, no_rag_s, ground_truth
+        ),
+        "metrics_with_rag": live_metrics.compute(
+            question, rag_answer, context, sources, rag_payload, rag_res, rag_s, ground_truth
+        ),
     })
 
 
@@ -144,11 +225,10 @@ def compare_models():
     """Runs the same question + same retrieved context through several
     Ollama models, so different LLMs can be compared side by side on
     identical input (Week 4, Exercise 1)."""
-    import time
-
     data = request.get_json(silent=True) or {}
     question = data.get("question", "").strip()
     models = data.get("models") or [MODEL_NAME]
+    ground_truth = find_eval_question(data.get("question_id"))
     if not question:
         return jsonify({"error": "Missing 'question' in request body"}), 400
     if not models:
@@ -157,6 +237,7 @@ def compare_models():
     retriever = get_retriever()
     sources = []
     prompt = question
+    context = ""
     if retriever:
         chunks = retriever.search(question, top_k=TOP_K)
         sources = [
@@ -166,16 +247,43 @@ def compare_models():
         context = build_context(chunks)
         prompt = RAG_SYSTEM_PREFIX.format(context=context, question=question)
 
+    num_predict = NUM_PREDICT_CODE if (ground_truth or {}).get("code_test") else NUM_PREDICT_DEFAULT
+
     results = []
     for model in models:
         t0 = time.time()
         try:
-            answer = call_ollama(prompt, model=model)
-            results.append({"model": model, "answer": answer, "latency_s": round(time.time() - t0, 1)})
+            answer, payload, resources, wall_s = generate(
+                prompt, model=model, num_predict=num_predict
+            )
+            results.append({
+                "model": model,
+                "answer": answer,
+                "latency_s": round(wall_s, 1),
+                "metrics": live_metrics.compute(
+                    question, answer, context, sources, payload, resources, wall_s, ground_truth
+                ),
+            })
         except requests.exceptions.RequestException as e:
             results.append({"model": model, "error": str(e), "latency_s": round(time.time() - t0, 1)})
 
     return jsonify({"question": question, "sources": sources, "results": results})
+
+
+@app.route("/eval_questions", methods=["GET"])
+def eval_questions():
+    """The labelled Week 4 questions, for the UI dropdown. Picking one sends
+    its id back with the request, which is what unlocks the three metrics
+    that need ground truth."""
+    return jsonify({"questions": [
+        {
+            "id": q["id"],
+            "category": q.get("category"),
+            "question": q["question"],
+            "has_code_test": bool(q.get("code_test")),
+        }
+        for q in load_eval_questions()
+    ]})
 
 
 @app.route("/health", methods=["GET"])

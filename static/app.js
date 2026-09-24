@@ -151,6 +151,40 @@
     });
   });
 
+  const evalSelect = document.getElementById("eval-select");
+  const evalHint = document.getElementById("eval-hint");
+
+  async function loadEvalQuestions() {
+    if (!evalSelect) return;
+    try {
+      const data = await fetchJson("/eval_questions");
+      (data.questions || []).forEach((q) => {
+        const opt = document.createElement("option");
+        opt.value = q.id;
+        const short = q.question.length > 78 ? q.question.slice(0, 75) + "\u2026" : q.question;
+        opt.textContent = `${q.id} \u00b7 ${q.category} \u2014 ${short}`;
+        opt.dataset.question = q.question;
+        evalSelect.appendChild(opt);
+      });
+    } catch (err) {
+      /* dropdown just stays empty; free-text questions still work */
+    }
+  }
+
+  if (evalSelect) {
+    evalSelect.addEventListener("change", () => {
+      const opt = evalSelect.selectedOptions[0];
+      if (evalSelect.value && opt && opt.dataset.question) {
+        textarea.value = opt.dataset.question;
+        evalHint.textContent =
+          "Labelled question \u2014 ground truth available, so all eight metrics are measured.";
+      } else {
+        evalHint.textContent =
+          "Correctness, retrieval quality and test-pass need ground truth. Pick one of the 28 labelled questions to measure all eight.";
+      }
+    });
+  }
+
   function tagRowHtml(sources) {
     if (!sources || !sources.length) return "";
     const tags = sources
@@ -178,6 +212,41 @@
           <div class="seg-syllabus" style="width:${100 - pyqPct}%"></div>
         </div>
       </div>`;
+  }
+
+  function metricsHtml(metrics, opts) {
+    if (!metrics || !metrics.length) return "";
+    const compact = (opts && opts.compact) || false;
+    const groups = [
+      { key: "quality", label: "Quality" },
+      { key: "performance", label: "Performance" },
+    ];
+    const blocks = groups
+      .map((g) => {
+        const tiles = metrics
+          .filter((m) => m.group === g.key)
+          .map((m) => {
+            const cls = m.available ? "metric is-available" : "metric is-na";
+            const tip = m.available ? m.detail || "" : m.reason || "";
+            return `<div class="${cls}" title="${escapeHtml(tip)}">
+              <div class="metric-label">${escapeHtml(m.label)}</div>
+              <div class="metric-value">${escapeHtml(String(m.display))}</div>
+              ${compact ? "" : `<div class="metric-detail">${escapeHtml(tip)}</div>`}
+            </div>`;
+          })
+          .join("");
+        if (!tiles) return "";
+        return `<div class="metric-group">
+          <div class="metric-group-label">${g.label}</div>
+          <div class="metric-grid">${tiles}</div>
+        </div>`;
+      })
+      .join("");
+    const naCount = metrics.filter((m) => !m.available).length;
+    const foot = naCount
+      ? `<div class="metric-foot">${metrics.length - naCount} of ${metrics.length} measurable for this question &mdash; hover a greyed metric for why.</div>`
+      : `<div class="metric-foot">All ${metrics.length} metrics measurable &mdash; this is a labelled question.</div>`;
+    return `<div class="metrics-panel">${blocks}${foot}</div>`;
   }
 
   function renderLoading(question) {
@@ -215,6 +284,7 @@
         <div class="answer"><p>${escapeHtml(data.answer).trim()}</p></div>
         ${tagRowHtml(data.sources)}
         ${coverageHtml(data.sources)}
+        ${metricsHtml(data.metrics)}
       </div>`
     );
   }
@@ -229,10 +299,12 @@
           <div class="compare-col">
             <div class="col-label"><span class="dot off"></span> Without your documents</div>
             <div class="answer"><p>${escapeHtml(data.without_rag).trim()}</p></div>
+            ${metricsHtml(data.metrics_without_rag, { compact: true })}
           </div>
           <div class="compare-col">
             <div class="col-label"><span class="dot on"></span> With your documents</div>
             <div class="answer"><p>${escapeHtml(data.with_rag).trim()}</p></div>
+            ${metricsHtml(data.metrics_with_rag, { compact: true })}
           </div>
         </div>
         ${tagRowHtml(data.sources_used_for_rag)}
@@ -251,12 +323,14 @@
         return `<div class="compare-col">
           <div class="col-label"><span class="dot on"></span> ${escapeHtml(r.model)} &middot; ${r.latency_s}s</div>
           ${body}
+          ${metricsHtml(r.metrics, { compact: true })}
         </div>`;
       })
       .join("");
+    const wide = data.results.length >= 3 ? " is-wide" : "";
     results.insertAdjacentHTML(
       "afterbegin",
-      `<div class="result-card">
+      `<div class="result-card${wide}">
         <div class="result-question">${escapeHtml(data.question)}</div>
         <div class="compare-grid models-grid">${cols}</div>
         ${tagRowHtml(data.sources)}
@@ -273,8 +347,9 @@
 
     const endpoint = mode === "compare" ? "/compare" : mode === "models" ? "/compare_models" : "/ask";
     let body;
+    const questionId = evalSelect && evalSelect.value ? evalSelect.value : null;
     if (mode === "compare") {
-      body = { question };
+      body = { question, question_id: questionId };
     } else if (mode === "models") {
       const models = Array.from(document.querySelectorAll("#model-row input:checked")).map((el) => el.value);
       if (!models.length) {
@@ -283,9 +358,9 @@
         submitLabel.textContent = prevLabel;
         return;
       }
-      body = { question, models };
+      body = { question, models, question_id: questionId };
     } else {
-      body = { question, rag: true };
+      body = { question, rag: true, question_id: questionId };
     }
 
     try {
@@ -305,6 +380,16 @@
     }
   }
 
+  textarea.addEventListener("input", () => {
+    if (!evalSelect || !evalSelect.value) return;
+    const opt = evalSelect.selectedOptions[0];
+    if (opt && opt.dataset.question !== textarea.value) {
+      evalSelect.value = "";
+      evalHint.textContent =
+        "Edited \u2014 back to a free question, so the three ground-truth metrics are N/A.";
+    }
+  });
+
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const question = textarea.value.trim();
@@ -314,4 +399,5 @@
 
   refreshKbStatus();
   refreshFileList();
+  loadEvalQuestions();
 })();
