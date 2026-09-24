@@ -664,3 +664,103 @@ textarea:focus {
 .compare-col .metric-grid { grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); }
 .compare-col .metric { padding: 6px 8px; }
 .compare-col .metric-value { font-size: 13px; }
+
+/* ---------------------------------------------------------------------
+   Repo Q&A — chunk similarity vs structural code search, side by side.
+   --------------------------------------------------------------------- */
+
+.quick-label {
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin-right: 2px;
+}
+
+.repo-quick[hidden], #doc-quick[hidden], .eval-picker[hidden] { display: none; }
+
+.badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 7px;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+.badge.on { background: var(--green-soft); color: var(--green); }
+.badge.off { background: var(--accent-soft); color: var(--accent); }
+
+.repo-note {
+  margin: 8px 0 4px;
+  padding: 7px 10px;
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 6px;
+}
+
+.sq-sub {
+  margin: 2px 0 10px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--ink-faint);
+}
+
+.sq + .sq { margin-top: 12px; }
+
+.sq-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sq-q {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.sq-count {
+  font-size: 11px;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.sq-why {
+  margin: 5px 0 6px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.sq-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sq-list li {
+  padding: 3px 0;
+  font-size: 12px;
+  line-height: 1.4;
+  border-bottom: 1px solid var(--border);
+}
+
+.sq-list li:last-child { border-bottom: none; }
+.sq-list code { font-family: var(--mono); font-size: 11.5px; color: var(--ink); }
+.sq-list .sym { color: var(--ink-faint); font-family: var(--mono); font-size: 11px; }
+
+/* The whole point of the structural side: "nothing found" is a real answer,
+   not a retrieval failure to paper over. */
+.sq-list .no-match {
+  color: var(--green);
+  font-style: italic;
+  border-bottom: none;
+}

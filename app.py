@@ -22,6 +22,9 @@ from rag.retrieval import Retriever, build_context
 from ingestion.build_index import build as rebuild_index
 from eval.metrics import ResourceSampler
 from rag import live_metrics
+from codesearch import planner, repo_rag
+from codesearch.local_backend import LocalASTBackend
+from codesearch.sourcegraph_backend import SourcegraphBackend
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024  # 20MB per upload request
@@ -52,6 +55,13 @@ _retriever = None
 _retriever_error = None
 _embedder = None
 _eval_questions = None
+_code_backend = None
+
+REPO_QA_PROMPT = (
+    "You are answering a question about a software repository. Use ONLY the "
+    "information below. If it does not contain the answer, say so explicitly "
+    "instead of guessing.\n\n{context}\n\nQuestion: {question}\nAnswer:"
+)
 
 
 def get_retriever():
@@ -268,6 +278,73 @@ def compare_models():
             results.append({"model": model, "error": str(e), "latency_s": round(time.time() - t0, 1)})
 
     return jsonify({"question": question, "sources": sources, "results": results})
+
+
+def get_code_backend():
+    """Prefer a configured Sourcegraph instance; fall back to the local AST
+    backend so the comparison still runs when no server is reachable. Which
+    one answered is reported in the response and shown in the UI -- the
+    fallback is never silent."""
+    global _code_backend
+    if _code_backend is None:
+        sg = SourcegraphBackend()
+        _code_backend = sg if sg.available() else LocalASTBackend()
+    return _code_backend
+
+
+@app.route("/repo_qa", methods=["POST"])
+def repo_qa():
+    """Answers a question about THIS repository twice -- once through chunk
+    similarity search (the Week 3 RAG pipeline pointed at the repo) and once
+    through structural code search -- so the two can be compared directly.
+
+    Week 4, Exercise 6 documented three question types the chunk-similarity
+    side gets wrong: absence, cross-file comparison, and functional
+    equivalence. This route is what closes that gap, and the UI shows both
+    answers side by side."""
+    data = request.get_json(silent=True) or {}
+    question = data.get("question", "").strip()
+    want_answers = data.get("answer", True)
+    if not question:
+        return jsonify({"error": "Missing 'question' in request body"}), 400
+
+    # -- structural side: plan the query, run it, report the facts ----------
+    backend = get_code_backend()
+    queries = planner.plan(question)
+    structural = [backend.run(q).to_dict() for q in queries]
+
+    # -- chunk-similarity side: same method as eval/repo_understanding.py ---
+    embedder = get_embedder()
+    chunks = repo_rag.search(question, embedder) if embedder is not None else []
+
+    payload = {
+        "question": question,
+        "backend": backend.name,
+        "sourcegraph_configured": isinstance(backend, SourcegraphBackend),
+        "structural": structural,
+        "rag_chunks": chunks,
+    }
+
+    if want_answers:
+        structural_context = "Structural code search results:\n" + "\n".join(
+            f"- query {r['kind']}:{r['term']} -> "
+            + (", ".join(f"{m['file']}:{m['line'] or ''} {m['symbol'] or ''}".strip()
+                         for m in r["matches"]) if r["matches"] else "NO MATCHES FOUND")
+            for r in structural
+        )
+        rag_context = repo_rag.build_context(chunks)
+        try:
+            payload["structural_answer"] = generate(
+                REPO_QA_PROMPT.format(context=structural_context, question=question))[0]
+            payload["rag_answer"] = generate(
+                REPO_QA_PROMPT.format(context="Code excerpts:\n" + rag_context,
+                                      question=question))[0]
+        except requests.exceptions.RequestException as e:
+            # No Ollama: the retrieved evidence is still the interesting part,
+            # so return it rather than failing the whole request.
+            payload["answer_error"] = f"Could not reach Ollama ({e}). Showing retrieval only."
+
+    return jsonify(payload)
 
 
 @app.route("/eval_questions", methods=["GET"])

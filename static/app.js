@@ -139,8 +139,21 @@
       tab.classList.add("is-active");
       tab.setAttribute("aria-selected", "true");
       mode = tab.dataset.mode;
-      submitLabel.textContent = mode === "compare" ? "Compare" : mode === "models" ? "Compare models" : "Ask";
+      submitLabel.textContent =
+        mode === "compare" ? "Compare" : mode === "models" ? "Compare models" : mode === "repo" ? "Search repo" : "Ask";
       modelRow.hidden = mode !== "models";
+      const isRepo = mode === "repo";
+      const repoQuick = document.getElementById("repo-quick");
+      const docQuick = document.getElementById("doc-quick");
+      const evalPicker = document.querySelector(".eval-picker");
+      if (repoQuick) repoQuick.hidden = !isRepo;
+      if (docQuick) docQuick.hidden = isRepo;
+      // The labelled-question dropdown is for the course-document dataset,
+      // which has no bearing on repository questions.
+      if (evalPicker) evalPicker.hidden = isRepo;
+      textarea.placeholder = isRepo
+        ? "ask about this repository — e.g. are there any test files?"
+        : "e.g. what topics come up a lot in past papers but aren't in the handout?";
     });
   });
 
@@ -339,16 +352,84 @@
     );
   }
 
+  function structuralHtml(structural) {
+    return structural
+      .map((r) => {
+        const rows = r.matches.length
+          ? r.matches
+              .map(
+                (m) =>
+                  `<li><code>${escapeHtml(m.file)}${m.line ? ":" + m.line : ""}</code>${
+                    m.symbol ? " <span class=\"sym\">" + escapeHtml(m.symbol) + "</span>" : ""
+                  }</li>`
+              )
+              .join("")
+          : `<li class="no-match">no matches &mdash; the answer is that it does not exist</li>`;
+        return `<div class="sq">
+          <div class="sq-head"><code class="sq-q">${escapeHtml(r.kind)}:${escapeHtml(r.term || "*")}</code>
+            <span class="sq-count">${r.count} match${r.count === 1 ? "" : "es"}</span></div>
+          <div class="sq-why">${escapeHtml(r.rationale || "")}</div>
+          <ul class="sq-list">${rows}</ul>
+        </div>`;
+      })
+      .join("");
+  }
+
+  function renderRepoResult(data) {
+    clearLoading();
+    const chunks = (data.rag_chunks || [])
+      .map((c) => `<li><code>${escapeHtml(c.file)}</code> <span class="sym">${c.score}</span></li>`)
+      .join("") || `<li class="no-match">nothing retrieved</li>`;
+    const ragAns = data.rag_answer
+      ? `<div class="answer"><p>${escapeHtml(data.rag_answer).trim()}</p></div>`
+      : "";
+    const structAns = data.structural_answer
+      ? `<div class="answer"><p>${escapeHtml(data.structural_answer).trim()}</p></div>`
+      : "";
+    const note = data.answer_error
+      ? `<div class="repo-note">${escapeHtml(data.answer_error)}</div>`
+      : "";
+    const badge = data.sourcegraph_configured
+      ? `<span class="badge on">Sourcegraph</span>`
+      : `<span class="badge off">local AST fallback &mdash; no Sourcegraph instance configured</span>`;
+
+    results.insertAdjacentHTML(
+      "afterbegin",
+      `<div class="result-card is-wide">
+        <div class="result-question">${escapeHtml(data.question)}</div>
+        ${note}
+        <div class="compare-grid">
+          <div class="compare-col">
+            <div class="col-label"><span class="dot off"></span> Chunk similarity &mdash; Week 3 RAG on the repo</div>
+            <div class="sq-sub">retrieved by embedding similarity, with no model of repository structure</div>
+            <ul class="sq-list">${chunks}</ul>
+            ${ragAns}
+          </div>
+          <div class="compare-col">
+            <div class="col-label"><span class="dot on"></span> Structural code search ${badge}</div>
+            <div class="sq-sub">the question is translated into a code query, then run against the repository's structure</div>
+            ${structuralHtml(data.structural || [])}
+            ${structAns}
+          </div>
+        </div>
+      </div>`
+    );
+  }
+
   async function submitQuestion(question) {
     renderLoading(question);
     submitBtn.disabled = true;
     const prevLabel = submitLabel.textContent;
-    submitLabel.textContent = mode === "compare" ? "Comparing…" : mode === "models" ? "Comparing models…" : "Asking…";
+    submitLabel.textContent =
+      mode === "compare" ? "Comparing…" : mode === "models" ? "Comparing models…" : mode === "repo" ? "Searching…" : "Asking…";
 
-    const endpoint = mode === "compare" ? "/compare" : mode === "models" ? "/compare_models" : "/ask";
+    const endpoint =
+      mode === "compare" ? "/compare" : mode === "models" ? "/compare_models" : mode === "repo" ? "/repo_qa" : "/ask";
     let body;
     const questionId = evalSelect && evalSelect.value ? evalSelect.value : null;
-    if (mode === "compare") {
+    if (mode === "repo") {
+      body = { question, answer: true };
+    } else if (mode === "compare") {
       body = { question, question_id: questionId };
     } else if (mode === "models") {
       const models = Array.from(document.querySelectorAll("#model-row input:checked")).map((el) => el.value);
@@ -369,7 +450,8 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      if (mode === "compare") renderCompareResult(data);
+      if (mode === "repo") renderRepoResult(data);
+      else if (mode === "compare") renderCompareResult(data);
       else if (mode === "models") renderModelsResult(data);
       else renderAskResult(data);
     } catch (err) {

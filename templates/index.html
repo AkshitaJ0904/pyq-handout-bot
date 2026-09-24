@@ -61,6 +61,7 @@
           <button type="button" class="seg-btn is-active" data-mode="ask" role="tab" aria-selected="true">Answer</button>
           <button type="button" class="seg-btn" data-mode="compare" role="tab" aria-selected="false">Compare with / without</button>
           <button type="button" class="seg-btn" data-mode="models" role="tab" aria-selected="false">Compare models</button>
+          <button type="button" class="seg-btn" data-mode="repo" role="tab" aria-selected="false">Repo Q&amp;A</button>
         </div>
       </div>
 
@@ -73,7 +74,13 @@
           </select>
           <span class="eval-hint" id="eval-hint">Correctness, retrieval quality and test-pass need ground truth. Pick one of the 28 labelled questions to measure all eight.</span>
         </div>
-        <div class="quick-row">
+        <div class="quick-row repo-quick" id="repo-quick" hidden>
+          <span class="quick-label">Week&nbsp;4 failures:</span>
+          <button type="button" class="quick" data-q="Are there any automated test files in this repository?">absence</button>
+          <button type="button" class="quick" data-q="Which component performs the cosine similarity search, and is that logic duplicated anywhere in the codebase?">duplication</button>
+          <button type="button" class="quick" data-q="What is the difference between how app.py and services/orchestrator.py handle file uploads?">cross-file</button>
+        </div>
+        <div class="quick-row" id="doc-quick">
           <button type="button" class="quick" data-q="Which topics come up often in past papers but are barely in the syllabus?">gap check</button>
           <button type="button" class="quick" data-q="What does the syllabus say about semaphores?">semaphores</button>
           <button type="button" class="quick" data-q="How are disk scheduling algorithms treated in the handout vs the exams?">disk scheduling</button>

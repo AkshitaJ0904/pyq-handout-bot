@@ -115,6 +115,23 @@ outcomes.
 ollama pull deepseek-coder:1.3b
 ```
 
+## Repo Q&A — structural code search
+
+The **Repo Q&A** tab answers questions about *this repository* twice: once
+through chunk similarity (the Week 3 RAG pipeline pointed at the repo) and
+once through structural code search, side by side.
+
+This exists because Week 4 measured three things chunk similarity cannot do —
+notice something is absent, compare two files, or see that two functions are
+functionally equivalent. The quick-chips load those three documented failures
+so the before/after is demonstrable.
+
+Sourcegraph is the primary backend (`SOURCEGRAPH_URL` / `SOURCEGRAPH_TOKEN` /
+`SOURCEGRAPH_REPO`); a local AST backend is the fallback so the comparison
+runs with no server. Which one answered is shown as a badge — the fallback is
+never silent. Setup, including why Apple Silicon can't host the server, is in
+[docs/sourcegraph.md](docs/sourcegraph.md).
+
 ## Tests
 
 ```bash
