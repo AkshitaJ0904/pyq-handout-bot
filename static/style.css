@@ -422,6 +422,28 @@ textarea:focus {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
+/* Three models side by side don't fit the 760px reading column, so a
+   3-up comparison breaks out of it. Centred via the standard 50% +
+   translate trick so it stays centred regardless of container padding. */
+.result-card.is-wide {
+  width: min(1180px, 94vw);
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 820px) {
+  .result-card.is-wide {
+    width: auto;
+    margin-left: 0;
+    transform: none;
+  }
+}
+
+/* `display: flex` beats the [hidden] attribute's UA rule on specificity, so
+   without this the model checkboxes stayed visible on the Answer and
+   Compare-with/without tabs, where they do nothing. */
+.model-row[hidden] { display: none; }
+
 .model-row {
   display: flex;
   flex-wrap: wrap;
@@ -523,4 +545,222 @@ textarea:focus {
   line-height: 1.6;
   color: var(--ink-faint);
   max-width: 56ch;
+}
+
+/* ---------------------------------------------------------------------
+   Metric panel — the eight Week 4 metrics, shown per answer.
+   Metrics that need ground truth a free-typed question can't supply are
+   rendered greyed with the reason in the tooltip, never as a fake number.
+   --------------------------------------------------------------------- */
+
+.eval-picker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 12px 0 4px;
+}
+
+.eval-picker label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  letter-spacing: 0.01em;
+}
+
+.eval-picker select {
+  flex: 1 1 320px;
+  min-width: 0;
+  padding: 7px 10px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+}
+
+.eval-picker select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.eval-hint {
+  flex: 1 1 100%;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--ink-faint);
+}
+
+.metrics-panel {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.metric-group + .metric-group { margin-top: 10px; }
+
+.metric-group-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  margin-bottom: 6px;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  gap: 8px;
+}
+
+.metric {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  cursor: help;
+}
+
+.metric.is-na {
+  background: transparent;
+  border-style: dashed;
+}
+
+.metric-label {
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-bottom: 3px;
+}
+
+.metric-value {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.metric.is-na .metric-value,
+.metric.is-na .metric-label { color: var(--ink-faint); }
+
+.metric-detail {
+  margin-top: 5px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ink-faint);
+}
+
+.metric-foot {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+
+/* Inside a with/without or model comparison column the panel is compact:
+   value + label only, details move to the tooltip. */
+.compare-col .metrics-panel { margin-top: 10px; }
+.compare-col .metric-grid { grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); }
+.compare-col .metric { padding: 6px 8px; }
+.compare-col .metric-value { font-size: 13px; }
+
+/* ---------------------------------------------------------------------
+   Repo Q&A — chunk similarity vs structural code search, side by side.
+   --------------------------------------------------------------------- */
+
+.quick-label {
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin-right: 2px;
+}
+
+.repo-quick[hidden], #doc-quick[hidden], .eval-picker[hidden] { display: none; }
+
+.badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 7px;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+.badge.on { background: var(--green-soft); color: var(--green); }
+.badge.off { background: var(--accent-soft); color: var(--accent); }
+
+.repo-note {
+  margin: 8px 0 4px;
+  padding: 7px 10px;
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 6px;
+}
+
+.sq-sub {
+  margin: 2px 0 10px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--ink-faint);
+}
+
+.sq + .sq { margin-top: 12px; }
+
+.sq-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sq-q {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.sq-count {
+  font-size: 11px;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.sq-why {
+  margin: 5px 0 6px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.sq-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sq-list li {
+  padding: 3px 0;
+  font-size: 12px;
+  line-height: 1.4;
+  border-bottom: 1px solid var(--border);
+}
+
+.sq-list li:last-child { border-bottom: none; }
+.sq-list code { font-family: var(--mono); font-size: 11.5px; color: var(--ink); }
+.sq-list .sym { color: var(--ink-faint); font-family: var(--mono); font-size: 11px; }
+
+/* The whole point of the structural side: "nothing found" is a real answer,
+   not a retrieval failure to paper over. */
+.sq-list .no-match {
+  color: var(--green);
+  font-style: italic;
+  border-bottom: none;
 }

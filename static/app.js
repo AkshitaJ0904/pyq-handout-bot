@@ -139,8 +139,21 @@
       tab.classList.add("is-active");
       tab.setAttribute("aria-selected", "true");
       mode = tab.dataset.mode;
-      submitLabel.textContent = mode === "compare" ? "Compare" : mode === "models" ? "Compare models" : "Ask";
+      submitLabel.textContent =
+        mode === "compare" ? "Compare" : mode === "models" ? "Compare models" : mode === "repo" ? "Search repo" : "Ask";
       modelRow.hidden = mode !== "models";
+      const isRepo = mode === "repo";
+      const repoQuick = document.getElementById("repo-quick");
+      const docQuick = document.getElementById("doc-quick");
+      const evalPicker = document.querySelector(".eval-picker");
+      if (repoQuick) repoQuick.hidden = !isRepo;
+      if (docQuick) docQuick.hidden = isRepo;
+      // The labelled-question dropdown is for the course-document dataset,
+      // which has no bearing on repository questions.
+      if (evalPicker) evalPicker.hidden = isRepo;
+      textarea.placeholder = isRepo
+        ? "ask about this repository — e.g. are there any test files?"
+        : "e.g. what topics come up a lot in past papers but aren't in the handout?";
     });
   });
 
@@ -150,6 +163,40 @@
       textarea.focus();
     });
   });
+
+  const evalSelect = document.getElementById("eval-select");
+  const evalHint = document.getElementById("eval-hint");
+
+  async function loadEvalQuestions() {
+    if (!evalSelect) return;
+    try {
+      const data = await fetchJson("/eval_questions");
+      (data.questions || []).forEach((q) => {
+        const opt = document.createElement("option");
+        opt.value = q.id;
+        const short = q.question.length > 78 ? q.question.slice(0, 75) + "\u2026" : q.question;
+        opt.textContent = `${q.id} \u00b7 ${q.category} \u2014 ${short}`;
+        opt.dataset.question = q.question;
+        evalSelect.appendChild(opt);
+      });
+    } catch (err) {
+      /* dropdown just stays empty; free-text questions still work */
+    }
+  }
+
+  if (evalSelect) {
+    evalSelect.addEventListener("change", () => {
+      const opt = evalSelect.selectedOptions[0];
+      if (evalSelect.value && opt && opt.dataset.question) {
+        textarea.value = opt.dataset.question;
+        evalHint.textContent =
+          "Labelled question \u2014 ground truth available, so all eight metrics are measured.";
+      } else {
+        evalHint.textContent =
+          "Correctness, retrieval quality and test-pass need ground truth. Pick one of the 28 labelled questions to measure all eight.";
+      }
+    });
+  }
 
   function tagRowHtml(sources) {
     if (!sources || !sources.length) return "";
@@ -178,6 +225,41 @@
           <div class="seg-syllabus" style="width:${100 - pyqPct}%"></div>
         </div>
       </div>`;
+  }
+
+  function metricsHtml(metrics, opts) {
+    if (!metrics || !metrics.length) return "";
+    const compact = (opts && opts.compact) || false;
+    const groups = [
+      { key: "quality", label: "Quality" },
+      { key: "performance", label: "Performance" },
+    ];
+    const blocks = groups
+      .map((g) => {
+        const tiles = metrics
+          .filter((m) => m.group === g.key)
+          .map((m) => {
+            const cls = m.available ? "metric is-available" : "metric is-na";
+            const tip = m.available ? m.detail || "" : m.reason || "";
+            return `<div class="${cls}" title="${escapeHtml(tip)}">
+              <div class="metric-label">${escapeHtml(m.label)}</div>
+              <div class="metric-value">${escapeHtml(String(m.display))}</div>
+              ${compact ? "" : `<div class="metric-detail">${escapeHtml(tip)}</div>`}
+            </div>`;
+          })
+          .join("");
+        if (!tiles) return "";
+        return `<div class="metric-group">
+          <div class="metric-group-label">${g.label}</div>
+          <div class="metric-grid">${tiles}</div>
+        </div>`;
+      })
+      .join("");
+    const naCount = metrics.filter((m) => !m.available).length;
+    const foot = naCount
+      ? `<div class="metric-foot">${metrics.length - naCount} of ${metrics.length} measurable for this question &mdash; hover a greyed metric for why.</div>`
+      : `<div class="metric-foot">All ${metrics.length} metrics measurable &mdash; this is a labelled question.</div>`;
+    return `<div class="metrics-panel">${blocks}${foot}</div>`;
   }
 
   function renderLoading(question) {
@@ -215,6 +297,7 @@
         <div class="answer"><p>${escapeHtml(data.answer).trim()}</p></div>
         ${tagRowHtml(data.sources)}
         ${coverageHtml(data.sources)}
+        ${metricsHtml(data.metrics)}
       </div>`
     );
   }
@@ -229,10 +312,12 @@
           <div class="compare-col">
             <div class="col-label"><span class="dot off"></span> Without your documents</div>
             <div class="answer"><p>${escapeHtml(data.without_rag).trim()}</p></div>
+            ${metricsHtml(data.metrics_without_rag, { compact: true })}
           </div>
           <div class="compare-col">
             <div class="col-label"><span class="dot on"></span> With your documents</div>
             <div class="answer"><p>${escapeHtml(data.with_rag).trim()}</p></div>
+            ${metricsHtml(data.metrics_with_rag, { compact: true })}
           </div>
         </div>
         ${tagRowHtml(data.sources_used_for_rag)}
@@ -251,12 +336,14 @@
         return `<div class="compare-col">
           <div class="col-label"><span class="dot on"></span> ${escapeHtml(r.model)} &middot; ${r.latency_s}s</div>
           ${body}
+          ${metricsHtml(r.metrics, { compact: true })}
         </div>`;
       })
       .join("");
+    const wide = data.results.length >= 3 ? " is-wide" : "";
     results.insertAdjacentHTML(
       "afterbegin",
-      `<div class="result-card">
+      `<div class="result-card${wide}">
         <div class="result-question">${escapeHtml(data.question)}</div>
         <div class="compare-grid models-grid">${cols}</div>
         ${tagRowHtml(data.sources)}
@@ -265,16 +352,85 @@
     );
   }
 
+  function structuralHtml(structural) {
+    return structural
+      .map((r) => {
+        const rows = r.matches.length
+          ? r.matches
+              .map(
+                (m) =>
+                  `<li><code>${escapeHtml(m.file)}${m.line ? ":" + m.line : ""}</code>${
+                    m.symbol ? " <span class=\"sym\">" + escapeHtml(m.symbol) + "</span>" : ""
+                  }</li>`
+              )
+              .join("")
+          : `<li class="no-match">no matches &mdash; the answer is that it does not exist</li>`;
+        return `<div class="sq">
+          <div class="sq-head"><code class="sq-q">${escapeHtml(r.kind)}:${escapeHtml(r.term || "*")}</code>
+            <span class="sq-count">${r.count} match${r.count === 1 ? "" : "es"}</span></div>
+          <div class="sq-why">${escapeHtml(r.rationale || "")}</div>
+          <ul class="sq-list">${rows}</ul>
+        </div>`;
+      })
+      .join("");
+  }
+
+  function renderRepoResult(data) {
+    clearLoading();
+    const chunks = (data.rag_chunks || [])
+      .map((c) => `<li><code>${escapeHtml(c.file)}</code> <span class="sym">${c.score}</span></li>`)
+      .join("") || `<li class="no-match">nothing retrieved</li>`;
+    const ragAns = data.rag_answer
+      ? `<div class="answer"><p>${escapeHtml(data.rag_answer).trim()}</p></div>`
+      : "";
+    const structAns = data.structural_answer
+      ? `<div class="answer"><p>${escapeHtml(data.structural_answer).trim()}</p></div>`
+      : "";
+    const note = data.answer_error
+      ? `<div class="repo-note">${escapeHtml(data.answer_error)}</div>`
+      : "";
+    const badge = data.sourcegraph_configured
+      ? `<span class="badge on">Sourcegraph</span>`
+      : `<span class="badge off">local AST fallback &mdash; no Sourcegraph instance configured</span>`;
+
+    results.insertAdjacentHTML(
+      "afterbegin",
+      `<div class="result-card is-wide">
+        <div class="result-question">${escapeHtml(data.question)}</div>
+        ${note}
+        <div class="compare-grid">
+          <div class="compare-col">
+            <div class="col-label"><span class="dot off"></span> Chunk similarity &mdash; Week 3 RAG on the repo</div>
+            <div class="sq-sub">retrieved by embedding similarity, with no model of repository structure</div>
+            <ul class="sq-list">${chunks}</ul>
+            ${ragAns}
+          </div>
+          <div class="compare-col">
+            <div class="col-label"><span class="dot on"></span> Structural code search ${badge}</div>
+            <div class="sq-sub">the question is translated into a code query, then run against the repository's structure</div>
+            ${structuralHtml(data.structural || [])}
+            ${structAns}
+          </div>
+        </div>
+      </div>`
+    );
+  }
+
   async function submitQuestion(question) {
     renderLoading(question);
     submitBtn.disabled = true;
     const prevLabel = submitLabel.textContent;
-    submitLabel.textContent = mode === "compare" ? "Comparing…" : mode === "models" ? "Comparing models…" : "Asking…";
+    submitLabel.textContent =
+      mode === "compare" ? "Comparing…" : mode === "models" ? "Comparing models…" : mode === "repo" ? "Searching…" : "Asking…";
 
-    const endpoint = mode === "compare" ? "/compare" : mode === "models" ? "/compare_models" : "/ask";
+    const endpoint =
+      mode === "compare" ? "/compare" : mode === "models" ? "/compare_models" : mode === "repo" ? "/repo_qa" : "/ask";
     let body;
-    if (mode === "compare") {
-      body = { question };
+    const questionId = evalSelect && evalSelect.value ? evalSelect.value : null;
+    if (mode === "repo") {
+      body = { question, answer: true };
+    } else if (mode === "compare") {
+      body = { question, question_id: questionId };
     } else if (mode === "models") {
       const models = Array.from(document.querySelectorAll("#model-row input:checked")).map((el) => el.value);
       if (!models.length) {
@@ -283,9 +439,9 @@
         submitLabel.textContent = prevLabel;
         return;
       }
-      body = { question, models };
+      body = { question, models, question_id: questionId };
     } else {
-      body = { question, rag: true };
+      body = { question, rag: true, question_id: questionId };
     }
 
     try {
@@ -294,7 +450,8 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      if (mode === "compare") renderCompareResult(data);
+      if (mode === "repo") renderRepoResult(data);
+      else if (mode === "compare") renderCompareResult(data);
       else if (mode === "models") renderModelsResult(data);
       else renderAskResult(data);
     } catch (err) {
@@ -305,6 +462,16 @@
     }
   }
 
+  textarea.addEventListener("input", () => {
+    if (!evalSelect || !evalSelect.value) return;
+    const opt = evalSelect.selectedOptions[0];
+    if (opt && opt.dataset.question !== textarea.value) {
+      evalSelect.value = "";
+      evalHint.textContent =
+        "Edited \u2014 back to a free question, so the three ground-truth metrics are N/A.";
+    }
+  });
+
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const question = textarea.value.trim();
@@ -314,4 +481,5 @@
 
   refreshKbStatus();
   refreshFileList();
+  loadEvalQuestions();
 })();

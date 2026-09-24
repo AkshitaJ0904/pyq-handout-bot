@@ -4,3 +4,5 @@ requests==2.32.3
 numpy==1.26.4
 pypdf==6.7.5
 sentence-transformers==5.2.2
+# metrics panel samples CPU/RSS during generation (eval/metrics.py ResourceSampler)
+psutil==6.0.0

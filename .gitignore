@@ -4,3 +4,7 @@ __pycache__/
 .DS_Store
 *.log
 ingestion/index/embeddings.npy
+.claude/
+.pytest_cache/
+ingestion/index/repo_embeddings.npy
+ingestion/index/repo_chunks.json

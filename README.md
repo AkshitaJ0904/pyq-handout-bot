@@ -80,6 +80,70 @@ Code Llama 7B on an 8GB M1 with other apps open can swap heavily and get
 very slow (single answers taking minutes). Keep other memory-hungry apps
 closed while testing, and keep `num_predict` low for quick iteration.
 
+## Metrics in the UI
+
+Every answer now carries the eight Week 4 metrics, rendered beside it —
+five quality (correctness, relevance, retrieval quality, hallucination rate,
+test-pass) and three performance (latency, token usage, resources). The
+implementations in `eval/metrics.py` are reused unchanged; `rag/live_metrics.py`
+just makes them available per-request.
+
+Three of the eight need ground truth a free-typed question doesn't have:
+correctness needs expected keypoints, retrieval quality needs labelled
+relevant source files, and test-pass needs an assertion harness. Those are
+shown greyed with the reason on hover rather than filled with a made-up
+number. The **Labelled evaluation question** dropdown loads any of the 28
+questions from `eval/eval_dataset.json`, which supplies that ground truth and
+lights all eight up.
+
+The three comparison views each carry the panel:
+
+- **Answer** — one model, full panel with per-metric detail.
+- **Compare with / without** — the same question answered with and without the
+  knowledge base, both sides measured. Note that grounding cannot be measured
+  at all without retrieved context, which is the point.
+- **Compare models** — `codellama:7b`, `starcoder2:3b` and `deepseek-coder:1.3b`
+  side by side on identical input.
+
+`deepseek-coder:1.3b` replaces `qwen3-coder:latest` as the third model. Week 4
+found the 18GB qwen3-coder ran at ~7s per output token and exhausted memory on
+this hardware (see `eval/REPORT.md`), which made it unusable for a live demo.
+deepseek-coder:1.3b is ~776MB and is one of the models named in the course
+outcomes.
+
+```bash
+ollama pull deepseek-coder:1.3b
+```
+
+## Repo Q&A — structural code search
+
+The **Repo Q&A** tab answers questions about *this repository* twice: once
+through chunk similarity (the Week 3 RAG pipeline pointed at the repo) and
+once through structural code search, side by side.
+
+This exists because Week 4 measured three things chunk similarity cannot do —
+notice something is absent, compare two files, or see that two functions are
+functionally equivalent. The quick-chips load those three documented failures
+so the before/after is demonstrable.
+
+Sourcegraph is the primary backend (`SOURCEGRAPH_URL` / `SOURCEGRAPH_TOKEN` /
+`SOURCEGRAPH_REPO`); a local AST backend is the fallback so the comparison
+runs with no server. Which one answered is shown as a badge — the fallback is
+never silent. Setup, including why Apple Silicon can't host the server, is in
+[docs/sourcegraph.md](docs/sourcegraph.md).
+
+## Tests
+
+```bash
+python3 -m pytest tests/ -q
+```
+
+`tests/test_metrics_wiring.py` stubs Ollama and the embedder, so the suite runs
+without a model pulled and without `ollama serve`. It checks the wiring — that
+every route returns all eight metrics, that a labelled question unlocks the
+three needing ground truth, and that an unavailable metric never reports a
+number — not model quality, which is what `eval/` is for.
+
 ## Week 4 — evaluation
 
 Multi-model evaluation, quantitative metrics, RAG pipeline tracing, and
