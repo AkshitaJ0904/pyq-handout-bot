@@ -262,6 +262,113 @@
     return `<div class="metrics-panel">${blocks}${foot}</div>`;
   }
 
+  // ---------- metrics comparison chart ----------
+  // One parameter at a time, vertical bars, paged with prev/next arrows —
+  // cleaner than 8 rows stacked at once.
+
+  const CHART_METRIC_KEYS = [
+    "correctness", "relevance", "retrieval_quality", "hallucination", "test_pass",
+    "latency", "tokens", "resources",
+  ];
+  const CHART_RATIO_KEYS = new Set(["correctness", "relevance", "retrieval_quality", "hallucination", "test_pass"]);
+  const CHART_COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"];
+
+  function metricsChartHtml(items) {
+    // items: [{label, metrics}] — metrics is the array each route already
+    // returns per answer (see rag/live_metrics.py). Needs 2+ items with at
+    // least one usable metric between them, otherwise there is nothing to
+    // compare and the chart is skipped rather than shown empty.
+    const usable = (items || []).filter((it) => it.metrics && it.metrics.length);
+    if (usable.length < 2) return "";
+
+    const byKey = usable.map((it) => {
+      const m = {};
+      it.metrics.forEach((x) => { m[x.key] = x; });
+      return m;
+    });
+
+    const slides = CHART_METRIC_KEYS.map((key) => {
+      const cells = byKey.map((m) => m[key]);
+      const sample = cells.find((c) => c);
+      if (!sample || !cells.some((c) => c && c.available)) return null;
+
+      const isRatio = CHART_RATIO_KEYS.has(key);
+      const maxVal = isRatio
+        ? 1
+        : Math.max(1e-9, ...cells.filter((c) => c && c.available && typeof c.value === "number").map((c) => c.value));
+
+      const bars = cells
+        .map((c, i) => {
+          const color = CHART_COLORS[i % CHART_COLORS.length];
+          const label = escapeHtml(usable[i].label);
+          if (!c || !c.available || typeof c.value !== "number") {
+            return `<div class="chart-vbar">
+              <span class="chart-vvalue is-na">N/A</span>
+              <div class="chart-vtrack"></div>
+              <span class="chart-vlabel">${label}</span>
+            </div>`;
+          }
+          const pct = Math.max(2, Math.min(100, (c.value / maxVal) * 100));
+          return `<div class="chart-vbar">
+            <span class="chart-vvalue">${escapeHtml(String(c.display))}</span>
+            <div class="chart-vtrack"><div class="chart-vfill" style="height:${pct}%;background:${color}"></div></div>
+            <span class="chart-vlabel">${label}</span>
+          </div>`;
+        })
+        .join("");
+
+      return { label: sample.label, html: `<div class="chart-vbars">${bars}</div>` };
+    }).filter(Boolean);
+
+    if (!slides.length) return "";
+
+    const slidesHtml = slides
+      .map((s, i) => `<div class="chart-slide" data-label="${escapeHtml(s.label)}"${i > 0 ? " hidden" : ""}>${s.html}</div>`)
+      .join("");
+    const dotsHtml = slides
+      .map((_, i) => `<span class="chart-dot${i === 0 ? " is-active" : ""}"></span>`)
+      .join("");
+
+    return `<div class="metrics-chart">
+      <div class="chart-title">Metrics comparison</div>
+      <div class="chart-pager">
+        <button type="button" class="chart-nav prev" aria-label="Previous parameter">&larr;</button>
+        <span class="chart-param-name">${escapeHtml(slides[0].label)}</span>
+        <button type="button" class="chart-nav next" aria-label="Next parameter">&rarr;</button>
+      </div>
+      <div class="chart-slides">${slidesHtml}</div>
+      <div class="chart-dots">${dotsHtml}</div>
+    </div>`;
+  }
+
+  // Delegated once for the whole results feed, since chart cards are added
+  // dynamically and each keeps its own paging state via which slide/dot
+  // currently lacks [hidden] / has .is-active — no per-chart id needed.
+  results.addEventListener("click", (e) => {
+    const nav = e.target.closest(".chart-nav");
+    const dot = e.target.closest(".chart-dot");
+    if (!nav && !dot) return;
+
+    const chart = e.target.closest(".metrics-chart");
+    if (!chart) return;
+    const slides = Array.from(chart.querySelectorAll(".chart-slide"));
+    const dots = Array.from(chart.querySelectorAll(".chart-dot"));
+    const current = slides.findIndex((s) => !s.hidden);
+    let next;
+    if (dot) {
+      next = dots.indexOf(dot);
+    } else {
+      next = nav.classList.contains("prev")
+        ? (current - 1 + slides.length) % slides.length
+        : (current + 1) % slides.length;
+    }
+    slides[current].hidden = true;
+    dots[current].classList.remove("is-active");
+    slides[next].hidden = false;
+    dots[next].classList.add("is-active");
+    chart.querySelector(".chart-param-name").textContent = slides[next].dataset.label;
+  });
+
   function renderLoading(question) {
     results.insertAdjacentHTML(
       "afterbegin",
@@ -320,6 +427,10 @@
             ${metricsHtml(data.metrics_with_rag, { compact: true })}
           </div>
         </div>
+        ${metricsChartHtml([
+          { label: "Without your documents", metrics: data.metrics_without_rag },
+          { label: "With your documents", metrics: data.metrics_with_rag },
+        ])}
         ${tagRowHtml(data.sources_used_for_rag)}
         ${coverageHtml(data.sources_used_for_rag)}
       </div>`
@@ -346,6 +457,7 @@
       `<div class="result-card${wide}">
         <div class="result-question">${escapeHtml(data.question)}</div>
         <div class="compare-grid models-grid">${cols}</div>
+        ${metricsChartHtml(data.results.filter((r) => !r.error).map((r) => ({ label: r.model, metrics: r.metrics })))}
         ${tagRowHtml(data.sources)}
         ${coverageHtml(data.sources)}
       </div>`
