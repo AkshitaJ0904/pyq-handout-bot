@@ -422,6 +422,11 @@ textarea:focus {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
+/* `display: flex` beats the [hidden] attribute's UA rule on specificity, so
+   without this the model checkboxes stayed visible on the Answer and
+   Compare-with/without tabs, where they do nothing. */
+.model-row[hidden] { display: none; }
+
 .model-row {
   display: flex;
   flex-wrap: wrap;

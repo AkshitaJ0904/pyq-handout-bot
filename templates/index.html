@@ -66,6 +66,13 @@
 
       <form id="ask-form">
         <textarea id="question" rows="2" placeholder="e.g. what topics come up a lot in past papers but aren't in the handout?" required></textarea>
+        <div class="eval-picker">
+          <label for="eval-select">Labelled evaluation question</label>
+          <select id="eval-select">
+            <option value="">Free question &mdash; 5 of 8 metrics measurable</option>
+          </select>
+          <span class="eval-hint" id="eval-hint">Correctness, retrieval quality and test-pass need ground truth. Pick one of the 28 labelled questions to measure all eight.</span>
+        </div>
         <div class="quick-row">
           <button type="button" class="quick" data-q="Which topics come up often in past papers but are barely in the syllabus?">gap check</button>
           <button type="button" class="quick" data-q="What does the syllabus say about semaphores?">semaphores</button>
@@ -75,7 +82,7 @@
           <span class="model-row-label">Models to compare</span>
           <label class="model-check"><input type="checkbox" value="codellama:7b" checked> codellama:7b</label>
           <label class="model-check"><input type="checkbox" value="starcoder2:3b" checked> starcoder2:3b</label>
-          <label class="model-check"><input type="checkbox" value="qwen3-coder:latest"> qwen3-coder:latest <span class="slow-note">(slow, ~7s/token on this machine)</span></label>
+          <label class="model-check"><input type="checkbox" value="deepseek-coder:1.3b" checked> deepseek-coder:1.3b</label>
         </div>
         <div class="form-footer">
           <button type="submit" class="primary-btn" id="submit-btn">
