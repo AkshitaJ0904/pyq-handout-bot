@@ -4,7 +4,7 @@ answers the three Week 4 questions correctly.
 
 Run it after setting up the server, before wiring the app to it:
 
-    export SOURCEGRAPH_URL=http://<ec2-public-ip>
+    export SOURCEGRAPH_URL=http://<ec2-public-ip>:7080
     export SOURCEGRAPH_TOKEN=sgp_...
     export SOURCEGRAPH_REPO=github.com/AkshitaJ0904/pyq-handout-bot
     python3 scripts/verify_sourcegraph.py
@@ -54,7 +54,7 @@ def main():
 
     if not url:
         return fail("SOURCEGRAPH_URL is not set.",
-                    "export SOURCEGRAPH_URL=http://<ec2-public-ip>")
+                    "export SOURCEGRAPH_URL=http://<ec2-public-ip>:7080")
 
     # 1. reachable at all?
     try:

@@ -43,37 +43,80 @@ UI. The fallback is never silent.
 
 ## Running Sourcegraph
 
-> **Apple Silicon will not work.** Sourcegraph's docs state that deployments on
-> ARM/ARM64 are unsupported, which rules out every M-series Mac. A Sourcegraph
-> license is only required above 10 users, so licensing is not a constraint for
-> a student team — the architecture is.
+> **Apple Silicon will not work.** Every published `sourcegraph/server` image
+> is `amd64` only, and Sourcegraph's docs state ARM/ARM64 deployments are
+> unsupported. The instance needs an x86_64 machine. A licence is only
+> required above 10 users, so licensing is not a constraint for a student
+> team — the architecture is.
 
-Options, in order of least effort:
+### Which deployment
 
-1. **An x86_64 machine** — any Intel/AMD laptop or desktop on the team.
-2. **A cloud VM** — Sourcegraph publishes deployment guides for AWS, Google
-   Cloud and DigitalOcean. A small VM on student credits is enough for one
-   repository.
-3. **Sourcegraph Cloud** — managed, no infrastructure to run.
+Sourcegraph documents two, and the difference matters on a small machine:
 
-Docker Compose is the supported single-node path:
+| | Docker Compose | **Single container** |
+|---|---|---|
+| Services | ~10 (postgres, redis, zoekt, gitserver, …) | one image, everything bundled |
+| Realistic RAM | 16GB+ | runs on 8GB with swap |
+| Supported for production | yes | no — "quick non-production environments" |
+
+For a course demo indexing one small repository, the single container is the
+right choice. A student AWS allowance tops out around 2 vCPU / 8GB, which is
+not enough for the Compose stack.
+
+### Pin the version — this is a real trap
+
+The docs' quickstart shows `sourcegraph/server:7.4.2513`, but **that image
+does not exist**. Single-container deployment was removed in Sourcegraph
+7.0.0 and the image stopped being published; the docs page simply templates
+the current product version into the command regardless.
+
+The last published tag is **`6.12.5040`** (10 February 2026, 1.17GB, amd64).
+Use it explicitly. `:latest` and any 7.x tag will fail to pull.
+
+### On AWS
+
+Launch **Ubuntu 24.04 LTS, 64-bit (x86)** on a `t3.large` (2 vCPU, 8GB) with
+30GB+ gp3 storage. Never a `t4g`/Graviton type — those are ARM64.
+
+Security group: inbound **22** and **7080**, both scoped to your own IP.
+Never `0.0.0.0/0` — the first-run wizard lets whoever reaches it first claim
+the admin account.
 
 ```bash
-git clone --branch release https://github.com/sourcegraph/deploy-sourcegraph-docker
-cd deploy-sourcegraph-docker/docker-compose
-docker compose up -d
+# swap matters on 8GB: startup is the memory peak, steady state is much lower
+sudo fallocate -l 8G /swapfile && sudo chmod 600 /swapfile
+sudo mkswap /swapfile && sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker ubuntu && newgrp docker
+
+docker run -d --name sourcegraph --restart unless-stopped \
+  --publish 7080:7080 \
+  --volume ~/.sourcegraph/config:/etc/sourcegraph \
+  --volume ~/.sourcegraph/data:/var/opt/sourcegraph \
+  sourcegraph/server:6.12.5040
 ```
 
-Then open the host on port 80, create the admin account, and add this
-repository under **Site admin → Repositories → Manage code hosts** (GitHub,
-`AkshitaJ0904/pyq-handout-bot`). Wait for it to finish cloning and indexing.
+Follow `docker logs -f sourcegraph` until the logo appears, then open
+`http://<public-ip>:7080` and **create the admin account immediately**.
+
+Add the repository under Site admin → Manage code hosts → GitHub, with a
+GitHub token (classic, `public_repo` scope is enough — the repo is public):
+
+```json
+{ "url": "https://github.com", "token": "<token>", "repos": ["AkshitaJ0904/pyq-handout-bot"] }
+```
+
+Queries return nothing until cloning and indexing finish, which is the most
+common false alarm. Watch Site admin → Repositories.
 
 ## Pointing the app at it
 
 Create an access token under **Settings → Access tokens**, then:
 
 ```bash
-export SOURCEGRAPH_URL=http://<host>          # e.g. http://192.168.1.20
+export SOURCEGRAPH_URL=http://<host>:7080     # e.g. http://13.200.1.20:7080
 export SOURCEGRAPH_TOKEN=sgp_xxxxxxxxxxxx
 export SOURCEGRAPH_REPO=github.com/AkshitaJ0904/pyq-handout-bot
 python3 app.py
@@ -88,7 +131,7 @@ comparison.
 After the server is up, before touching the app:
 
 ```bash
-export SOURCEGRAPH_URL=http://<ec2-public-ip>
+export SOURCEGRAPH_URL=http://<ec2-public-ip>:7080
 export SOURCEGRAPH_TOKEN=sgp_...
 export SOURCEGRAPH_REPO=github.com/AkshitaJ0904/pyq-handout-bot
 python3 scripts/verify_sourcegraph.py
