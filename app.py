@@ -22,6 +22,7 @@ from rag.retrieval import Retriever, build_context
 from ingestion.build_index import build as rebuild_index
 from eval.metrics import ResourceSampler
 from rag import live_metrics
+from guardrails import pipeline as guard_pipeline
 from codesearch import planner, repo_rag
 from codesearch.local_backend import LocalASTBackend
 from codesearch.sourcegraph_backend import SourcegraphBackend
@@ -41,6 +42,10 @@ EVAL_DATASET = Path(__file__).resolve().parent / "eval" / "eval_dataset.json"
 # (REPORT.md, Exercise 3), so code-generation questions get a larger budget.
 NUM_PREDICT_DEFAULT = 150
 NUM_PREDICT_CODE = 400
+
+# Guardrails can be turned off per-request so the UI can demonstrate
+# without-guardrail vs with-guardrail behaviour on the same question.
+GUARDRAILS_DEFAULT = True
 
 RAG_SYSTEM_PREFIX = (
     "You are a study assistant for a college course. Use ONLY the context "
@@ -149,37 +154,59 @@ def ask():
         return jsonify({"error": "Missing 'question' in request body"}), 400
 
     retriever = get_retriever() if use_rag else None
-    sources = []
-    prompt = question
-    context = ""
-
-    if retriever:
-        chunks = retriever.search(question, top_k=TOP_K)
-        sources = [
-            {"source_file": c["source_file"], "doc_type": c["doc_type"], "score": round(c["score"], 3)}
-            for c in chunks
-        ]
-        context = build_context(chunks)
-        prompt = RAG_SYSTEM_PREFIX.format(context=context, question=question)
 
     num_predict = NUM_PREDICT_CODE if (ground_truth or {}).get("code_test") else NUM_PREDICT_DEFAULT
+    guards_on = data.get("guardrails", GUARDRAILS_DEFAULT)
+
+    # Captured from inside the pipeline so the metrics panel still reports on
+    # the real generation even when a guard replaces the answer shown.
+    gen_state = {}
+
+    def _generate(q, ctx, chunks):
+        a, payload, resources, wall_s = generate(
+            RAG_SYSTEM_PREFIX.format(context=ctx, question=q) if ctx else q,
+            num_predict=num_predict)
+        gen_state.update(answer=a, payload=payload, resources=resources, wall_s=wall_s)
+        return a
 
     try:
-        answer, payload, resources, wall_s = generate(prompt, num_predict=num_predict)
+        result = guard_pipeline.run(
+            question,
+            retrieve_fn=(lambda q: retriever.search(q, top_k=TOP_K)) if retriever else (lambda q: []),
+            generate_fn=_generate,
+            build_context_fn=build_context,
+            embedder=get_embedder(),
+            enabled=guards_on,
+            # No knowledge base means nothing to ground against, so only the
+            # input stage applies -- see guardrails/pipeline.py.
+            stages=guard_pipeline.ALL_STAGES if retriever else ("input",),
+        )
     except requests.exceptions.ConnectionError:
         return jsonify({"error": "Could not reach Ollama. Is it running? Try: ollama serve"}), 503
     except requests.exceptions.RequestException as e:
         return jsonify({"error": f"Ollama request failed: {e}"}), 502
 
-    return jsonify({
+    sources = [
+        {"source_file": c["source_file"], "doc_type": c["doc_type"], "score": round(c["score"], 3)}
+        for c in (result.chunks or [])
+    ]
+    context = build_context(result.chunks) if result.chunks else ""
+
+    body = {
         "question": question,
-        "answer": answer,
+        "answer": result.answer,
         "rag_used": retriever is not None,
         "sources": sources,
-        "metrics": live_metrics.compute(
-            question, answer, context, sources, payload, resources, wall_s, ground_truth
-        ),
-    })
+        "guardrails": result.to_dict(),
+        "guardrails_enabled": guards_on,
+    }
+    # Metrics only mean something when a generation actually happened.
+    if gen_state:
+        body["metrics"] = live_metrics.compute(
+            question, gen_state["answer"], context, sources, gen_state["payload"],
+            gen_state["resources"], gen_state["wall_s"], ground_truth)
+        body["raw_answer"] = gen_state["answer"]
+    return jsonify(body)
 
 
 @app.route("/compare", methods=["POST"])
@@ -345,6 +372,50 @@ def repo_qa():
             payload["answer_error"] = f"Could not reach Ollama ({e}). Showing retrieval only."
 
     return jsonify(payload)
+
+
+@app.route("/guardrail_demo", methods=["POST"])
+def guardrail_demo():
+    """Runs one question with guardrails off and on, for the
+    without -> problematic / with -> controlled demonstration.
+
+    Retrieval and generation happen ONCE and are shared by both sides, so the
+    only thing that differs is whether the verdicts are acted on."""
+    data = request.get_json(silent=True) or {}
+    question = data.get("question", "").strip()
+    if not question:
+        return jsonify({"error": "Missing 'question' in request body"}), 400
+
+    retriever = get_retriever()
+    cache = {}
+
+    def _generate(q, ctx, chunks):
+        # Generated once and shared by both runs, so the only difference
+        # between them is whether the verdicts are acted on.
+        if "answer" not in cache:
+            try:
+                cache["answer"] = generate(
+                    RAG_SYSTEM_PREFIX.format(context=ctx, question=q) if ctx else q)[0]
+            except requests.exceptions.RequestException as e:
+                # A guard that blocks before generation is still worth showing,
+                # so a missing model degrades to verdicts-only rather than 503.
+                cache["answer"] = ""
+                cache["error"] = f"Could not reach Ollama ({type(e).__name__}). "\
+                                 f"Showing guardrail verdicts only."
+        return cache["answer"]
+
+    retrieve_fn = (lambda q: retriever.search(q, top_k=TOP_K)) if retriever else (lambda q: [])
+    both = {}
+    for label, enabled in (("with", True), ("without", False)):
+        r = guard_pipeline.run(question, retrieve_fn, _generate, build_context,
+                               embedder=get_embedder(), enabled=enabled)
+        both[label] = {**r.to_dict(), "summary": guard_pipeline.summarise(r)}
+
+    body = {"question": question, "without_guardrails": both["without"],
+            "with_guardrails": both["with"]}
+    if cache.get("error"):
+        body["answer_error"] = cache["error"]
+    return jsonify(body)
 
 
 @app.route("/eval_questions", methods=["GET"])
